@@ -1,6 +1,7 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { motion } from 'framer-motion';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
@@ -11,8 +12,26 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
   const logoRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
+  const [tipIndex, setTipIndex] = useState(0);
+
+  // Environmental tips
+  const tips = [
+    "Turn off lights when not in use to save energy",
+    "Use reusable bags for shopping to reduce plastic waste",
+    "Take shorter showers to conserve water",
+    "Unplug electronics when not in use to save energy",
+    "Try meatless Mondays to reduce carbon footprint",
+    "Use public transportation or carpool when possible",
+    "Recycle paper, plastic, glass, and aluminum properly",
+    "Choose reusable water bottles instead of disposable ones"
+  ];
 
   useEffect(() => {
+    // Cycle through tips
+    const tipInterval = setInterval(() => {
+      setTipIndex(prev => (prev + 1) % tips.length);
+    }, 3000);
+
     const tl = gsap.timeline({
       onComplete: () => {
         gsap.to(loaderRef.current, {
@@ -39,32 +58,49 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
     // Progress animation
     tl.fromTo(progressRef.current,
       { scaleX: 0 },
-      { scaleX: 1, duration: 1.5, ease: "power2.inOut" },
+      { scaleX: 1, duration: 2.5, ease: "power2.inOut" },
       "-=0.2"
     );
 
-    // Return cleanup function
     return () => {
+      clearInterval(tipInterval);
       tl.kill();
     };
-  }, [onLoadingComplete]);
+  }, [onLoadingComplete, tips.length]);
 
   return (
     <div ref={loaderRef} className="gsap-loader">
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center max-w-md px-4">
         <div ref={logoRef} className="mb-6">
-          <div className="h-24 w-24 rounded-full bg-green-500 flex items-center justify-center">
+          <motion.div 
+            className="h-24 w-24 rounded-full bg-green-500 flex items-center justify-center"
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+          >
             <svg className="h-12 w-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
-          </div>
+          </motion.div>
         </div>
         
         <div ref={textRef} className="mb-10 text-center">
           <h1 className="text-3xl font-bold text-green-500 mb-2">GreenRoutine</h1>
           <p className="text-gray-600">Building a sustainable future</p>
         </div>
+
+        {/* Tips Section */}
+        <motion.div
+          key={tipIndex}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 text-center"
+        >
+          <p className="text-sm text-gray-500 mb-1">Green Tip:</p>
+          <p className="text-gray-700 italic">{tips[tipIndex]}</p>
+        </motion.div>
 
         <div className="w-64 h-1 bg-gray-200 rounded-full overflow-hidden">
           <div ref={progressRef} className="h-full bg-green-500 origin-left"></div>
