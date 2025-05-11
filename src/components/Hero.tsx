@@ -98,11 +98,11 @@ const Hero = () => {
 
   // Inspirational quotes from green-routine.vercel.app
   const quotes = [
-    ""The greatest threat to our planet is the belief that someone else will save it." - Robert Swan",
-    ""We do not inherit the earth from our ancestors, we borrow it from our children." - Native American Proverb",
-    ""The Earth is what we all have in common." - Wendell Berry",
-    ""Nature does not hurry, yet everything is accomplished." - Lao Tzu",
-    ""We won't have a society if we destroy the environment." - Margaret Mead"
+    "\"The greatest threat to our planet is the belief that someone else will save it.\" - Robert Swan",
+    "\"We do not inherit the earth from our ancestors, we borrow it from our children.\" - Native American Proverb",
+    "\"The Earth is what we all have in common.\" - Wendell Berry",
+    "\"Nature does not hurry, yet everything is accomplished.\" - Lao Tzu",
+    "\"We won't have a society if we destroy the environment.\" - Margaret Mead"
   ];
   
   // Select random quote
