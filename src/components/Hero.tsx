@@ -5,12 +5,13 @@ import * as THREE from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, useTexture } from '@react-three/drei';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 // Earth component with improved visual effects
 const EarthGlobe = () => {
   const meshRef = useRef<THREE.Mesh>(null!);
   
-  // Earth texture maps
+  // Earth texture maps with higher quality textures
   const earthTexture = useTexture({
     map: 'https://i.imgur.com/nNUCyx4.jpg',
     normalMap: 'https://i.imgur.com/VG0kALc.jpg',
@@ -19,18 +20,19 @@ const EarthGlobe = () => {
   });
   
   useFrame(() => {
-    meshRef.current.rotation.y += 0.0015;
+    meshRef.current.rotation.y += 0.002; // Slightly increased rotation speed
   });
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[2.2, 64, 64]} />
+      <sphereGeometry args={[2.2, 128, 128]} /> {/* Increased geometry resolution */}
       <meshPhysicalMaterial 
         {...earthTexture}
-        roughness={0.7}
-        metalness={0.2}
-        clearcoat={0.1}
-        clearcoatRoughness={0.4}
+        roughness={0.6} // Reduced roughness for better light reflection
+        metalness={0.3} // Increased metalness
+        clearcoat={0.2} // Increased clearcoat
+        clearcoatRoughness={0.3} // Smoother clearcoat
+        envMapIntensity={1.5} // Enhanced environment reflection
       />
     </mesh>
   );
@@ -42,17 +44,18 @@ const CloudLayer = () => {
   const cloudTexture = useTexture('https://i.imgur.com/TSnPiLv.png');
   
   useFrame(() => {
-    meshRef.current.rotation.y += 0.001;
+    meshRef.current.rotation.y += 0.001; // Keep slower rotation for clouds
   });
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[2.25, 64, 64]} />
+      <sphereGeometry args={[2.35, 64, 64]} /> {/* Slightly larger to better envelop Earth */}
       <meshStandardMaterial 
         map={cloudTexture} 
         transparent={true} 
-        opacity={0.4}
-        alphaTest={0.1}
+        opacity={0.35} // Slightly reduced opacity for better visibility
+        alphaTest={0.15}
+        depthWrite={false} // Prevent z-fighting
       />
     </mesh>
   );
@@ -110,12 +113,12 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Three.js Background */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-blue-900/40 to-green-900/20">
-        <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} intensity={1.5} />
-          <pointLight position={[-10, -10, -10]} color="#3db9dc" intensity={1} />
+      {/* Three.js Background with improved lighting */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-blue-900/30 to-green-900/20">
+        <Canvas camera={{ position: [0, 0, 5.5], fov: 45 }}> {/* Adjusted camera position */}
+          <ambientLight intensity={0.65} /> {/* Increased ambient light */}
+          <directionalLight position={[10, 10, 5]} intensity={2} /> {/* Increased light intensity */}
+          <pointLight position={[-10, -10, -10]} color="#3db9dc" intensity={1.5} /> {/* Enhanced blue light */}
           <EarthGlobe />
           <CloudLayer />
           <Environment preset="city" />
@@ -124,7 +127,9 @@ const Hero = () => {
             enablePan={false}
             rotateSpeed={0.4}
             autoRotate
-            autoRotateSpeed={0.5}
+            autoRotateSpeed={0.7} // Increased auto-rotation speed
+            maxPolarAngle={Math.PI / 1.5} // Limit rotation angle
+            minPolarAngle={Math.PI / 3} // Set minimum rotation angle
           />
         </Canvas>
       </div>
@@ -145,10 +150,26 @@ const Hero = () => {
         </p>
         <div ref={ctaRef} className="flex flex-col sm:flex-row justify-center gap-4">
           <Button className="bg-green-500 hover:bg-green-600 text-lg py-6 px-8 shadow-lg" asChild>
-            <a href="/dashboard">Get Started</a>
+            <Link to="/dashboard">Get Started</Link>
           </Button>
           <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg py-6 px-8 shadow-md" asChild>
-            <a href="/about">Learn More</a>
+            <Link to="/about">Learn More</Link>
+          </Button>
+        </div>
+        
+        {/* Feature Links */}
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" asChild>
+            <Link to="/reminders">Reminders</Link>
+          </Button>
+          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" asChild>
+            <Link to="/challenges">Challenges</Link>
+          </Button>
+          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" asChild>
+            <Link to="/calculator">Calculator</Link>
+          </Button>
+          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white" asChild>
+            <Link to="/faq">FAQ</Link>
           </Button>
         </div>
         

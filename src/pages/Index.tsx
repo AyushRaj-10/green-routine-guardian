@@ -10,6 +10,7 @@ import Testimonials from '@/components/Testimonials';
 import Sponsors from '@/components/Sponsors';
 import Reminders from '@/components/Reminders';
 import Challenges from '@/components/Challenges';
+import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 
@@ -52,6 +53,7 @@ const Index = () => {
       <Calculator />
       <Reminders />
       <Challenges />
+      <FAQ />
       <Testimonials />
       <Sponsors />
       <Footer />
