@@ -35,24 +35,31 @@ const About = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
   };
 
+  // Updated team members information
   const teamMembers = [
     {
-      name: "Emma Johnson",
+      name: "Ayush Raj",
       role: "Founder & CEO",
-      image: "https://randomuser.me/api/portraits/women/23.jpg",
-      bio: "Environmental scientist with a passion for making sustainability accessible to everyone."
+      image: "https://randomuser.me/api/portraits/men/32.jpg",
+      bio: "A passionate entrepreneur at Dayananda Sagar College of Engineering with a vision to make sustainability accessible to everyone."
     },
     {
-      name: "Michael Chen",
+      name: "Arpita Pai",
       role: "Head of Technology",
-      image: "https://randomuser.me/api/portraits/men/54.jpg",
-      bio: "Software engineer focused on creating tools that help people reduce their carbon footprint."
+      image: "https://randomuser.me/api/portraits/women/33.jpg",
+      bio: "Computer Science student at Dayananda Sagar College of Engineering focused on creating tools that help people reduce their carbon footprint."
     },
     {
-      name: "Sarah Williams",
+      name: "Astuti Singh",
       role: "Environmental Specialist",
-      image: "https://randomuser.me/api/portraits/women/45.jpg",
-      bio: "PhD in Environmental Science with expertise in sustainable urban planning."
+      image: "https://randomuser.me/api/portraits/women/44.jpg",
+      bio: "Environmental Science student at Dayananda Sagar College of Engineering with a passion for sustainable urban planning."
+    },
+    {
+      name: "Arti Pikhan",
+      role: "Marketing Director",
+      image: "https://randomuser.me/api/portraits/women/68.jpg",
+      bio: "Business Administration student at Dayananda Sagar College of Engineering with expertise in digital marketing and community building."
     }
   ];
 
@@ -75,7 +82,7 @@ const About = () => {
                 that collectively create a significant positive impact on our environment.
               </p>
               <div className="max-w-xs mx-auto">
-                <Button className="w-full bg-white text-green-700 hover:bg-green-100">Join Our Community</Button>
+                <Button className="w-full bg-white text-green-700 hover:bg-green-100 hover:scale-105 transition-transform">Join Our Community</Button>
               </div>
             </motion.div>
           </div>
@@ -95,17 +102,17 @@ const About = () => {
                 <h2 className="text-3xl font-bold mb-6">Our Story</h2>
                 <div className="space-y-4 text-gray-700">
                   <p>
-                    GreenRoutine was founded in 2023 with a simple idea: what if sustainable living was as easy as checking your phone?
+                    GreenRoutine was founded in 2024 with a simple idea: what if sustainable living was as easy as checking your phone?
                   </p>
                   <p>
-                    Our founder, Emma Johnson, noticed that while many people wanted to live more sustainably, 
-                    they struggled to develop and maintain eco-friendly habits. As an environmental scientist, 
-                    she knew that consistent small actions could lead to significant positive change.
+                    Our founder, Ayush Raj, noticed that while many people wanted to live more sustainably, 
+                    they struggled to develop and maintain eco-friendly habits. As a student passionate about environmental preservation,
+                    he knew that consistent small actions could lead to significant positive change.
                   </p>
                   <p>
                     GreenRoutine was born from this realization - a platform that makes sustainable living accessible, 
-                    trackable, and rewarding. Today, our community includes thousands of individuals around the world who 
-                    are making a difference one small habit at a time.
+                    trackable, and rewarding. Today, our team of dedicated students from Dayananda Sagar College of Engineering 
+                    is working to create a global community of environmentally conscious individuals.
                   </p>
                 </div>
               </motion.div>
@@ -139,19 +146,19 @@ const About = () => {
               whileInView="visible"
               viewport={{ once: true }}
             >
-              <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md">
+              <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md hover:shadow-xl transition-shadow">
                 <div className="text-green-500 text-5xl font-bold mb-4">5K+</div>
                 <h3 className="text-xl font-semibold mb-2">Active Users</h3>
                 <p className="text-gray-600">Building sustainable habits around the world</p>
               </motion.div>
               
-              <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md">
+              <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md hover:shadow-xl transition-shadow">
                 <div className="text-green-500 text-5xl font-bold mb-4">10K+</div>
                 <h3 className="text-xl font-semibold mb-2">Trees Planted</h3>
                 <p className="text-gray-600">Through our community challenges and initiatives</p>
               </motion.div>
               
-              <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md">
+              <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md hover:shadow-xl transition-shadow">
                 <div className="text-green-500 text-5xl font-bold mb-4">50%</div>
                 <h3 className="text-xl font-semibold mb-2">Carbon Reduction</h3>
                 <p className="text-gray-600">Average carbon footprint reduction among active users</p>
@@ -173,7 +180,7 @@ const About = () => {
             </motion.h2>
             
             <motion.div 
-              className="grid md:grid-cols-3 gap-8"
+              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
@@ -183,13 +190,16 @@ const About = () => {
                 <motion.div 
                   key={index} 
                   variants={itemVariants} 
-                  className="bg-white rounded-lg overflow-hidden shadow-md"
+                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all hover:scale-105"
+                  whileHover={{ y: -5 }}
                 >
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-64 object-cover object-center"
-                  />
+                  <div className="h-64 overflow-hidden">
+                    <img 
+                      src={member.image} 
+                      alt={member.name}
+                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-1">{member.name}</h3>
                     <p className="text-green-600 mb-4">{member.role}</p>
@@ -216,8 +226,8 @@ const About = () => {
                 Together, we can create a more sustainable future through small, consistent actions.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button className="bg-white text-green-700 hover:bg-green-100">Get Started</Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white/10">Learn More</Button>
+                <Button className="bg-white text-green-700 hover:bg-green-100 hover:scale-105 transition-transform">Get Started</Button>
+                <Button variant="outline" className="border-white text-white hover:bg-white/10 hover:scale-105 transition-transform">Learn More</Button>
               </div>
             </motion.div>
           </div>

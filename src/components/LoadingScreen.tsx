@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;
@@ -69,19 +69,39 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
   }, [onLoadingComplete, tips.length]);
 
   return (
-    <div ref={loaderRef} className="gsap-loader">
+    <div 
+      ref={loaderRef} 
+      className="fixed inset-0 bg-white z-50 flex items-center justify-center flex-col"
+      style={{ perspective: "1000px" }}
+    >
       <div className="flex flex-col items-center max-w-md px-4">
-        <div ref={logoRef} className="mb-6">
+        <div ref={logoRef} className="mb-6 relative">
           <motion.div 
             className="h-24 w-24 rounded-full bg-green-500 flex items-center justify-center"
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+            animate={{ 
+              rotate: 360,
+              boxShadow: ["0px 0px 0px rgba(34, 197, 94, 0.2)", "0px 0px 20px rgba(34, 197, 94, 0.6)", "0px 0px 0px rgba(34, 197, 94, 0.2)"]
+            }}
+            transition={{ 
+              rotate: { repeat: Infinity, duration: 6, ease: "linear" },
+              boxShadow: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+            }}
           >
             <svg className="h-12 w-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
           </motion.div>
+          <motion.div 
+            className="absolute w-32 h-32 rounded-full border-2 border-green-300 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className="absolute w-40 h-40 rounded-full border border-green-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.1, 0.3] }}
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut", delay: 0.2 }}
+          />
         </div>
         
         <div ref={textRef} className="mb-10 text-center">
@@ -90,20 +110,28 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
         </div>
 
         {/* Tips Section */}
-        <motion.div
-          key={tipIndex}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8 text-center"
-        >
-          <p className="text-sm text-gray-500 mb-1">Green Tip:</p>
-          <p className="text-gray-700 italic">{tips[tipIndex]}</p>
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tipIndex}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 text-center"
+          >
+            <p className="text-sm text-gray-500 mb-1">Green Tip:</p>
+            <p className="text-gray-700 italic">{tips[tipIndex]}</p>
+          </motion.div>
+        </AnimatePresence>
 
-        <div className="w-64 h-1 bg-gray-200 rounded-full overflow-hidden">
-          <div ref={progressRef} className="h-full bg-green-500 origin-left"></div>
+        <div className="w-64 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+          <div 
+            ref={progressRef} 
+            className="h-full bg-green-500 origin-left rounded-full"
+            style={{
+              boxShadow: "0 0 10px rgba(34, 197, 94, 0.5)"
+            }}
+          />
         </div>
       </div>
     </div>
