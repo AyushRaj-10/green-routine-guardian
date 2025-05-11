@@ -18,10 +18,10 @@ const EarthGlobe = () => {
     <mesh ref={meshRef}>
       <sphereGeometry args={[2, 64, 64]} />
       <meshStandardMaterial 
-        color="#1565C0"
+        color={new THREE.Color("#1565C0")}
         roughness={0.7}
         metalness={0.1}
-        emissive="#0A3870"
+        emissive={new THREE.Color("#0A3870")}
         emissiveIntensity={0.2}
       />
     </mesh>

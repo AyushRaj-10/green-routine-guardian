@@ -1,4 +1,3 @@
-
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,7 +12,6 @@ export const initSmoothScroll = () => {
     orientation: 'vertical',
     gestureOrientation: 'vertical',
     smoothWheel: true,
-    smoothTouch: false,
     touchMultiplier: 2,
   });
 
