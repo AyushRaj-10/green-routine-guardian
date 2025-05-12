@@ -1,37 +1,38 @@
+
 import { BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const Story = () => {
   const timeline = [
     {
-      year: "2021",
+      year: "April 2025",
       title: "The Idea",
-      content: "Four passionate students from Dayananda Sagar College of Engineering came together with a shared vision of making sustainability accessible to everyone.",
+      content: "Four 18-year-old computer science students from Dayananda Sagar College of Engineering came together with a shared vision of making sustainability accessible to everyone.",
       image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800"
     },
     {
-      year: "2022",
+      year: "May 2025",
       title: "First Prototype",
       content: "What started as a college project quickly evolved into a full-fledged application. The team worked tirelessly to develop the core features: reminders, challenges, and impact tracking.",
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800"
     },
     {
-      year: "2023",
+      year: "June 2025",
       title: "Growing Community",
       content: "GreenRoutine launched publicly and quickly attracted a community of environmentally conscious users. The platform helped save thousands of liters of water and reduce carbon emissions significantly.",
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=800"
     },
     {
-      year: "2024",
+      year: "July 2025",
       title: "Impact & Recognition",
       content: "The app gained recognition for its innovative approach to sustainability. Several environmental organizations and educational institutions partnered with GreenRoutine to promote eco-friendly habits.",
       image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800"
     },
     {
-      year: "2025",
+      year: "Future",
       title: "Looking Forward",
       content: "With a growing user base and expanding features, GreenRoutine continues its mission to create a more sustainable future, one habit at a time.",
-      image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dlooking%2Bforward&psig=AOvVaw2YsZI-iLlAbmxpc6dT0mfI&ust=1747142181932000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPCQqPuBno0DFQAAAAAdAAAAABAE"
+      image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800"
     }
   ];
 

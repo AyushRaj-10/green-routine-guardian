@@ -75,23 +75,23 @@ const About = () => {
                 <h2 className="text-3xl font-bold mb-6">Our Story</h2>
                 <div className="space-y-4 text-gray-700">
                   <p>
-                    GreenRoutine was founded in 2024 with a simple idea: what if sustainable living was as easy as checking your phone?
+                    GreenRoutine was founded in April 2025 with a simple idea: what if sustainable living was as easy as checking your phone?
                   </p>
                   <p>
-                    Our founder, Ayush Raj, noticed that while many people wanted to live more sustainably, 
+                    Our founder, Ayush Raj, an 18-year-old Computer Science student, noticed that while many people wanted to live more sustainably, 
                     they struggled to develop and maintain eco-friendly habits. As a student passionate about environmental preservation,
                     he knew that consistent small actions could lead to significant positive change.
                   </p>
                   <p>
                     GreenRoutine was born from this realization - a platform that makes sustainable living accessible, 
-                    trackable, and rewarding. Today, our team of dedicated students from Dayananda Sagar College of Engineering 
+                    trackable, and rewarding. Today, our team of dedicated 18-year-old Computer Science students from Dayananda Sagar College of Engineering 
                     is working to create a global community of environmentally conscious individuals.
                   </p>
                 </div>
               </motion.div>
               <motion.div variants={itemVariants} className="rounded-lg overflow-hidden shadow-xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" 
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=1170&q=80" 
                   alt="Team working together"
                   className="w-full h-auto"
                 />

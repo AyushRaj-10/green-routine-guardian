@@ -7,28 +7,28 @@ export const founderData = [
     name: "Ayush Raj",
     role: "Co-founder & CEO",
     image: "https://randomuser.me/api/portraits/men/32.jpg",
-    bio: "Ayush is a passionate environmentalist with a background in computer science. He founded GreenRoutine to make sustainable living accessible and engaging for everyone.",
+    bio: "Ayush is an 18-year-old Computer Science student at Dayananda Sagar College of Engineering. He founded GreenRoutine as a college project to make sustainable living accessible and engaging for everyone.",
     gender: "male"
   },
   {
     name: "Arpita Pai",
     role: "Co-founder & CTO",
     image: "https://randomuser.me/api/portraits/women/33.jpg",
-    bio: "Arpita brings technical expertise and innovation to GreenRoutine. Her vision drives the platform's interactive features and seamless user experience.",
+    bio: "Arpita is an 18-year-old Computer Science student who brings technical expertise to GreenRoutine. Her vision drives the platform's interactive features and seamless user experience.",
     gender: "female"
   },
   {
     name: "Astuti Singh",
     role: "Co-founder & COO",
     image: "https://randomuser.me/api/portraits/women/44.jpg",
-    bio: "Astuti oversees operations and ensures the platform continues to evolve with the needs of our growing community. Her background in environmental science informs our impact metrics.",
+    bio: "Astuti is an 18-year-old Computer Science student who oversees operations for GreenRoutine. Her passion for environmental science informs our impact metrics and sustainability goals.",
     gender: "female"
   },
   {
     name: "Arti Pikhan",
     role: "Co-founder & Design Lead",
     image: "https://randomuser.me/api/portraits/women/68.jpg",
-    bio: "At just 18, Arti is a design prodigy whose creativity shapes the visual identity and user interface of GreenRoutine. She is passionate about making sustainability attractive.",
+    bio: "Arti is an 18-year-old Computer Science student whose creativity shapes the visual identity and user interface of GreenRoutine. She is passionate about making sustainability attractive.",
     gender: "female"
   }
 ];
@@ -69,7 +69,7 @@ export const Founders = () => {
       <div className="col-span-1 md:col-span-2 bg-green-50 rounded-xl p-8 text-center">
         <h3 className="text-2xl font-bold mb-4">Our Story</h3>
         <p className="text-gray-600 max-w-3xl mx-auto">
-          The founders met at Dayananda Sagar College of Engineering where they shared a common concern for environmental sustainability. 
+          The founders met at Dayananda Sagar College of Engineering where they are all 18-year-old Computer Science students. 
           What started as a college project quickly evolved into a mission to create a platform that would make sustainable living accessible, 
           engaging, and rewarding for everyone. Today, GreenRoutine is empowering thousands of users to build greener habits and collectively 
           make a significant positive impact on our planet.
