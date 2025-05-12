@@ -17,10 +17,10 @@ const TreeTrunk = ({ growth }) => {
     <animated.mesh 
       ref={trunkRef} 
       position={[0, 0, 0]} 
-      scale={scale}
     >
       <cylinderGeometry args={[0.15, 0.3, 1, 8]} />
       <meshStandardMaterial color="#8B4513" roughness={0.8} />
+      <animated.group scale={scale} />
     </animated.mesh>
   );
 };
@@ -37,11 +37,10 @@ const TreeLeaves = ({ growth }) => {
   return (
     <animated.mesh 
       ref={leavesRef} 
-      position={position} 
-      scale={scale}
     >
       <coneGeometry args={[1, 2, 8]} />
       <meshStandardMaterial color="#2E8B57" roughness={0.7} />
+      <animated.group position={position} scale={scale} />
     </animated.mesh>
   );
 };
