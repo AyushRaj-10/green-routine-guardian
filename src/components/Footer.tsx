@@ -1,5 +1,6 @@
 
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -42,40 +43,40 @@ const Footer = () => {
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#home" className="text-green-100 hover:text-white transition-colors">Home</a>
+                <Link to="/" className="text-green-100 hover:text-white transition-colors">Home</Link>
               </li>
               <li>
-                <a href="#features" className="text-green-100 hover:text-white transition-colors">Features</a>
+                <Link to="/about" className="text-green-100 hover:text-white transition-colors">About</Link>
               </li>
               <li>
-                <a href="#calculator" className="text-green-100 hover:text-white transition-colors">Calculator</a>
+                <Link to="/story" className="text-green-100 hover:text-white transition-colors">Our Story</Link>
               </li>
               <li>
-                <a href="#reminders" className="text-green-100 hover:text-white transition-colors">Reminders</a>
+                <Link to="/founders" className="text-green-100 hover:text-white transition-colors">Founders</Link>
               </li>
               <li>
-                <a href="#challenges" className="text-green-100 hover:text-white transition-colors">Challenges</a>
+                <Link to="/calculator" className="text-green-100 hover:text-white transition-colors">Calculator</Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-lg font-bold mb-6">Resources</h4>
+            <h4 className="text-lg font-bold mb-6">Features</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-green-100 hover:text-white transition-colors">Blog</a>
+                <Link to="/reminders" className="text-green-100 hover:text-white transition-colors">Reminders</Link>
               </li>
               <li>
-                <a href="#" className="text-green-100 hover:text-white transition-colors">Sustainability Guide</a>
+                <Link to="/challenges" className="text-green-100 hover:text-white transition-colors">Challenges</Link>
               </li>
               <li>
-                <a href="#" className="text-green-100 hover:text-white transition-colors">Community Forum</a>
+                <Link to="/calculator" className="text-green-100 hover:text-white transition-colors">Calculator</Link>
               </li>
               <li>
-                <a href="#" className="text-green-100 hover:text-white transition-colors">FAQ</a>
+                <Link to="/faq" className="text-green-100 hover:text-white transition-colors">FAQ</Link>
               </li>
               <li>
-                <a href="#" className="text-green-100 hover:text-white transition-colors">Support</a>
+                <Link to="/dashboard" className="text-green-100 hover:text-white transition-colors">Dashboard</Link>
               </li>
             </ul>
           </div>
@@ -98,6 +99,14 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-green-700 text-center">
           <p className="text-green-100">&copy; {new Date().getFullYear()} GreenRoutine. All rights reserved.</p>
+          <div className="mt-4 flex flex-wrap justify-center gap-4">
+            <Link to="/about" className="text-green-100 hover:text-white text-sm transition-colors">About Us</Link>
+            <Link to="/story" className="text-green-100 hover:text-white text-sm transition-colors">Our Story</Link>
+            <Link to="/founders" className="text-green-100 hover:text-white text-sm transition-colors">Founders</Link>
+            <Link to="/faq" className="text-green-100 hover:text-white text-sm transition-colors">FAQ</Link>
+            <a href="#" className="text-green-100 hover:text-white text-sm transition-colors">Privacy Policy</a>
+            <a href="#" className="text-green-100 hover:text-white text-sm transition-colors">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>

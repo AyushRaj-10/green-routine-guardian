@@ -15,9 +15,11 @@ import Footer from '@/components/Footer';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
+  const [userCount, setUserCount] = useState(1248);
 
   useEffect(() => {
     // Simulate a loading delay
@@ -42,6 +44,17 @@ const Index = () => {
     }
   }, [loading]);
 
+  // Animate user count
+  useEffect(() => {
+    if (!loading) {
+      const interval = setInterval(() => {
+        setUserCount(prev => prev + Math.floor(Math.random() * 3) + 1);
+      }, 8000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [loading]);
+
   if (loading) {
     return <LoadingScreen onLoadingComplete={() => setLoading(false)} />;
   }
@@ -51,6 +64,53 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Features />
+
+      {/* User Count Section */}
+      <section className="py-16 bg-green-800 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-8">Join Our Growing Community</h2>
+          
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <motion.p 
+                className="text-4xl md:text-5xl font-bold text-white mb-2"
+                key={userCount}
+                initial={{ scale: 1.2 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                {userCount.toLocaleString()}
+              </motion.p>
+              <p className="text-lg text-green-100">Active Users</p>
+            </motion.div>
+            
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <p className="text-4xl md:text-5xl font-bold text-white mb-2">3,540</p>
+              <p className="text-lg text-green-100">Trees Planted</p>
+            </motion.div>
+            
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <p className="text-4xl md:text-5xl font-bold text-white mb-2">8.2M</p>
+              <p className="text-lg text-green-100">Liters of Water Saved</p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       <div className="py-10 bg-green-50 text-center">
         <div className="container mx-auto px-4">
@@ -73,6 +133,50 @@ const Index = () => {
       <Calculator />
       <Reminders />
       <Challenges />
+      
+      {/* Story & Founders Preview Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div 
+              className="order-2 lg:order-1"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-3xl font-bold mb-4">Our Journey</h2>
+              <p className="text-gray-600 mb-6">
+                GreenRoutine started as a college project by four passionate students at Dayananda Sagar College of Engineering.
+                What began as an idea to promote sustainable habits has grown into a platform used by thousands to make
+                positive environmental impacts every day.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button className="bg-green-500 hover:bg-green-600" asChild>
+                  <Link to="/story">Read Our Story</Link>
+                </Button>
+                <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-50" asChild>
+                  <Link to="/founders">Meet the Founders</Link>
+                </Button>
+              </div>
+            </motion.div>
+            <motion.div 
+              className="order-1 lg:order-2"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=800" 
+                alt="GreenRoutine Team" 
+                className="rounded-lg shadow-xl w-full h-64 object-cover"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+      
       <FAQ />
       
       <section id="leaderboard-preview" className="py-16 bg-gray-50">
