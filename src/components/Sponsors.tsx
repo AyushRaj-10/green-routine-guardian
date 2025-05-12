@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 
 // Sample sponsor logos (would be replaced with actual logos)
 const sponsors = [
-  { id: 1, name: 'EcoTech', logo: 'https://via.placeholder.com/150?text=EcoTech' },
+  { id: 1, name: 'EcoTech', logo: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffavpng.com%2Fpng_view%2Fnatural-environment-logo-organization-natural-environment-world-wide-fund-for-nature-png%2F7TkUzT6C&psig=AOvVaw3raE8ZxNhCnz1syMC6AfgJ&ust=1747141453029000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjZ2qL_nY0DFQAAAAAdAAAAABAE' },
   { id: 2, name: 'GreenLife', logo: 'https://via.placeholder.com/150?text=GreenLife' },
   { id: 3, name: 'SustainCorp', logo: 'https://via.placeholder.com/150?text=SustainCorp' },
   { id: 4, name: 'EnviroSolutions', logo: 'https://via.placeholder.com/150?text=EnviroSolutions' },
