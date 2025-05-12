@@ -1,7 +1,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useSpring, a } from '@react-spring/three';
+import { useSpring, animated } from '@react-spring/three';
 import { Environment, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -12,7 +12,7 @@ type GrowthProps = {
 
 const TreeTrunk: React.FC<GrowthProps> = ({ growth }) => {
   const trunkRef = useRef<THREE.Group>(null);
-  const springs = useSpring({
+  const { height } = useSpring({
     height: growth * 2,
     from: { height: 0.1 },
     config: { mass: 1, tension: 80, friction: 20 }
@@ -20,17 +20,17 @@ const TreeTrunk: React.FC<GrowthProps> = ({ growth }) => {
 
   return (
     <group ref={trunkRef} position={[0, 0, 0]}>
-      <a.mesh position={[0, springs.height.to(h => h / 2), 0]}>
-        <a.cylinderGeometry args={[0.15, 0.3, springs.height, 8]} />
+      <animated.mesh position-y={height.to(h => h / 2)}>
+        <animated.cylinderGeometry args={[0.15, 0.3, height, 8]} />
         <meshStandardMaterial color="#8B4513" roughness={0.8} />
-      </a.mesh>
+      </animated.mesh>
     </group>
   );
 };
 
 const TreeLeaves: React.FC<GrowthProps> = ({ growth }) => {
   const leavesRef = useRef<THREE.Group>(null);
-  const springs = useSpring({
+  const { scale, posY } = useSpring({
     scale: growth * 1.5,
     posY: growth * 1.5,
     from: { scale: 0.1, posY: 0.2 },
@@ -39,13 +39,15 @@ const TreeLeaves: React.FC<GrowthProps> = ({ growth }) => {
 
   return (
     <group ref={leavesRef}>
-      <a.mesh 
-        position={[0, springs.posY, 0]}
-        scale={springs.scale.to(s => [s, s, s])}
+      <animated.mesh 
+        position-y={posY}
+        scale-x={scale}
+        scale-y={scale}
+        scale-z={scale}
       >
         <coneGeometry args={[1, 2, 8]} />
         <meshStandardMaterial color="#2E8B57" roughness={0.7} />
-      </a.mesh>
+      </animated.mesh>
     </group>
   );
 };
