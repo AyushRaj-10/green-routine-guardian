@@ -26,7 +26,7 @@ export const Story = () => {
       year: "2024",
       title: "Impact & Recognition",
       content: "The app gained recognition for its innovative approach to sustainability. Several environmental organizations and educational institutions partnered with GreenRoutine to promote eco-friendly habits.",
-      image: "https://images.unsplash.com/photo-1488521787991-ed7bbafc3efd?auto=format&fit=crop&w=800"
+      image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fclapping&psig=AOvVaw3IrPqdFImjylOk90YZFpy5&ust=1747141619090000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNDT4fH_nY0DFQAAAAAdAAAAABAE"
     },
     {
       year: "2025",
