@@ -1,47 +1,49 @@
 
-import { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { useSpring, animated } from '@react-spring/three';
+import { useRef, useState, useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { useSpring, a } from '@react-spring/three';
 import { Environment, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Use 'a' as the animated namespace from @react-spring/three
 const TreeTrunk = ({ growth }) => {
   const trunkRef = useRef();
-  const { scale } = useSpring({
-    scale: [1, growth * 2, 1],
-    from: { scale: [1, 0.1, 1] },
+  const { height } = useSpring({
+    height: growth * 2,
+    from: { height: 0.1 },
     config: { mass: 1, tension: 80, friction: 20 }
   });
 
   return (
-    <animated.mesh 
-      ref={trunkRef} 
-      position={[0, 0, 0]} 
-    >
-      <cylinderGeometry args={[0.15, 0.3, 1, 8]} />
-      <meshStandardMaterial color="#8B4513" roughness={0.8} />
-      <animated.group scale={scale} />
-    </animated.mesh>
+    <group ref={trunkRef} position={[0, 0, 0]}>
+      <a.mesh position-y={height.to(h => h / 2)}>
+        <a.cylinderGeometry args={[0.15, 0.3, height, 8]} />
+        <meshStandardMaterial color="#8B4513" roughness={0.8} />
+      </a.mesh>
+    </group>
   );
 };
 
 const TreeLeaves = ({ growth }) => {
   const leavesRef = useRef();
-  const { scale, position } = useSpring({
-    scale: [growth * 1.5, growth * 1.5, growth * 1.5],
-    position: [0, growth * 1.5, 0],
-    from: { scale: [0.1, 0.1, 0.1], position: [0, 0.2, 0] },
+  const { scale, posY } = useSpring({
+    scale: growth * 1.5,
+    posY: growth * 1.5,
+    from: { scale: 0.1, posY: 0.2 },
     config: { mass: 1, tension: 80, friction: 20 }
   });
 
   return (
-    <animated.mesh 
+    <a.group 
       ref={leavesRef} 
+      position-y={posY}
+      scale={scale.to(s => [s, s, s])}
     >
-      <coneGeometry args={[1, 2, 8]} />
-      <meshStandardMaterial color="#2E8B57" roughness={0.7} />
-      <animated.group position={position} scale={scale} />
-    </animated.mesh>
+      <mesh>
+        <coneGeometry args={[1, 2, 8]} />
+        <meshStandardMaterial color="#2E8B57" roughness={0.7} />
+      </mesh>
+    </a.group>
   );
 };
 
@@ -55,21 +57,34 @@ const Ground = () => {
 };
 
 const TreeAnimation = () => {
-  const growthRef = useRef(0.1);
-
-  useFrame(() => {
-    if (growthRef.current < 1) {
-      growthRef.current += 0.005;
-    }
-  });
+  const [growth, setGrowth] = useState(0.1);
+  
+  useEffect(() => {
+    let animationId;
+    let currentGrowth = 0.1;
+    
+    const animate = () => {
+      if (currentGrowth < 1) {
+        currentGrowth += 0.005;
+        setGrowth(currentGrowth);
+      }
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
 
   return (
     <>
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 10, 5]} intensity={1.5} castShadow />
       <Ground />
-      <TreeTrunk growth={growthRef.current} />
-      <TreeLeaves growth={growthRef.current} />
+      <TreeTrunk growth={growth} />
+      <TreeLeaves growth={growth} />
       <Environment preset="forest" />
     </>
   );
@@ -91,6 +106,9 @@ export const GrowingTree = () => {
     <div className="h-full w-full">
       <Canvas 
         camera={{ position: [0, 2, 5], fov: 45 }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(new THREE.Color('#000000'), 0);
+        }}
         onError={() => setErrorState(true)}
       >
         <TreeAnimation />
