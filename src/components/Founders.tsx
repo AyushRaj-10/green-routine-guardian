@@ -1,41 +1,42 @@
 
 import { User } from "lucide-react";
 
-export const Founders = () => {
-  const founders = [
-    {
-      name: "Ayush Raj",
-      role: "Co-founder & CEO",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      bio: "Ayush is a passionate environmentalist with a background in computer science. He founded GreenRoutine to make sustainable living accessible and engaging for everyone.",
-      gender: "male"
-    },
-    {
-      name: "Arpita Pai",
-      role: "Co-founder & CTO",
-      image: "https://randomuser.me/api/portraits/women/33.jpg",
-      bio: "Arpita brings technical expertise and innovation to GreenRoutine. Her vision drives the platform's interactive features and seamless user experience.",
-      gender: "female"
-    },
-    {
-      name: "Astuti Singh",
-      role: "Co-founder & COO",
-      image: "https://randomuser.me/api/portraits/women/34.jpg",
-      bio: "Astuti oversees operations and ensures the platform continues to evolve with the needs of our growing community. Her background in environmental science informs our impact metrics.",
-      gender: "female"
-    },
-    {
-      name: "Arti Pikhan",
-      role: "Co-founder & Design Lead",
-      image: "https://randomuser.me/api/portraits/women/35.jpg",
-      bio: "At just 18, Arti is a design prodigy whose creativity shapes the visual identity and user interface of GreenRoutine. She is passionate about making sustainability attractive.",
-      gender: "female"
-    }
-  ];
+// Create consistent founder information to use across the site
+export const founderData = [
+  {
+    name: "Ayush Raj",
+    role: "Co-founder & CEO",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    bio: "Ayush is a passionate environmentalist with a background in computer science. He founded GreenRoutine to make sustainable living accessible and engaging for everyone.",
+    gender: "male"
+  },
+  {
+    name: "Arpita Pai",
+    role: "Co-founder & CTO",
+    image: "https://randomuser.me/api/portraits/women/33.jpg",
+    bio: "Arpita brings technical expertise and innovation to GreenRoutine. Her vision drives the platform's interactive features and seamless user experience.",
+    gender: "female"
+  },
+  {
+    name: "Astuti Singh",
+    role: "Co-founder & COO",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    bio: "Astuti oversees operations and ensures the platform continues to evolve with the needs of our growing community. Her background in environmental science informs our impact metrics.",
+    gender: "female"
+  },
+  {
+    name: "Arti Pikhan",
+    role: "Co-founder & Design Lead",
+    image: "https://randomuser.me/api/portraits/women/68.jpg",
+    bio: "At just 18, Arti is a design prodigy whose creativity shapes the visual identity and user interface of GreenRoutine. She is passionate about making sustainability attractive.",
+    gender: "female"
+  }
+];
 
+export const Founders = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-      {founders.map((founder, index) => (
+      {founderData.map((founder, index) => (
         <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105">
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/3">

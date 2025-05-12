@@ -2,16 +2,16 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
-// Sample sponsor logos (would be replaced with actual logos)
+// Sample sponsor logos with working image URLs
 const sponsors = [
-  { id: 1, name: 'EcoTech', logo: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffavpng.com%2Fpng_view%2Fnatural-environment-logo-organization-natural-environment-world-wide-fund-for-nature-png%2F7TkUzT6C&psig=AOvVaw3raE8ZxNhCnz1syMC6AfgJ&ust=1747141453029000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjZ2qL_nY0DFQAAAAAdAAAAABAE' },
-  { id: 2, name: 'GreenLife', logo: 'https://via.placeholder.com/150?text=GreenLife' },
-  { id: 3, name: 'SustainCorp', logo: 'https://via.placeholder.com/150?text=SustainCorp' },
-  { id: 4, name: 'EnviroSolutions', logo: 'https://via.placeholder.com/150?text=EnviroSolutions' },
-  { id: 5, name: 'CleanEnergy', logo: 'https://via.placeholder.com/150?text=CleanEnergy' },
-  { id: 6, name: 'WaterWise', logo: 'https://via.placeholder.com/150?text=WaterWise' },
-  { id: 7, name: 'EarthFirst', logo: 'https://via.placeholder.com/150?text=EarthFirst' },
-  { id: 8, name: 'RecyclePro', logo: 'https://via.placeholder.com/150?text=RecyclePro' },
+  { id: 1, name: 'EcoTech', logo: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=150&h=150' },
+  { id: 2, name: 'GreenLife', logo: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=150&h=150' },
+  { id: 3, name: 'SustainCorp', logo: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=150&h=150' },
+  { id: 4, name: 'EnviroSolutions', logo: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=150&h=150' },
+  { id: 5, name: 'CleanEnergy', logo: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=150&h=150' },
+  { id: 6, name: 'WaterWise', logo: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=150&h=150' },
+  { id: 7, name: 'EarthFirst', logo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=150&h=150' },
+  { id: 8, name: 'RecyclePro', logo: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=150&h=150' },
 ];
 
 const Sponsors = () => {

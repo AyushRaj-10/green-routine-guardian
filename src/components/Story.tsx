@@ -1,4 +1,3 @@
-
 import { BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -14,7 +13,7 @@ export const Story = () => {
       year: "2022",
       title: "First Prototype",
       content: "What started as a college project quickly evolved into a full-fledged application. The team worked tirelessly to develop the core features: reminders, challenges, and impact tracking.",
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800"
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800"
     },
     {
       year: "2023",
@@ -26,7 +25,7 @@ export const Story = () => {
       year: "2024",
       title: "Impact & Recognition",
       content: "The app gained recognition for its innovative approach to sustainability. Several environmental organizations and educational institutions partnered with GreenRoutine to promote eco-friendly habits.",
-      image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fclapping&psig=AOvVaw3IrPqdFImjylOk90YZFpy5&ust=1747141619090000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNDT4fH_nY0DFQAAAAAdAAAAABAE"
+      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800"
     },
     {
       year: "2025",

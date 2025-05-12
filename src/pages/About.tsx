@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
+import { founderData } from '@/components/Founders';
 
 const About = () => {
   useEffect(() => {
@@ -34,34 +35,6 @@ const About = () => {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
   };
-
-  // Updated team members information
-  const teamMembers = [
-    {
-      name: "Ayush Raj",
-      role: "Founder & CEO",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      bio: "A passionate entrepreneur at Dayananda Sagar College of Engineering with a vision to make sustainability accessible to everyone."
-    },
-    {
-      name: "Arpita Pai",
-      role: "Head of Technology",
-      image: "https://randomuser.me/api/portraits/women/33.jpg",
-      bio: "Computer Science student at Dayananda Sagar College of Engineering focused on creating tools that help people reduce their carbon footprint."
-    },
-    {
-      name: "Astuti Singh",
-      role: "Environmental Specialist",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      bio: "Environmental Science student at Dayananda Sagar College of Engineering with a passion for sustainable urban planning."
-    },
-    {
-      name: "Arti Pikhan",
-      role: "Marketing Director",
-      image: "https://randomuser.me/api/portraits/women/68.jpg",
-      bio: "Business Administration student at Dayananda Sagar College of Engineering with expertise in digital marketing and community building."
-    }
-  ];
 
   return (
     <div className="min-h-screen">
@@ -118,7 +91,7 @@ const About = () => {
               </motion.div>
               <motion.div variants={itemVariants} className="rounded-lg overflow-hidden shadow-xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" 
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" 
                   alt="Team working together"
                   className="w-full h-auto"
                 />
@@ -186,7 +159,7 @@ const About = () => {
               whileInView="visible"
               viewport={{ once: true }}
             >
-              {teamMembers.map((member, index) => (
+              {founderData.map((founder, index) => (
                 <motion.div 
                   key={index} 
                   variants={itemVariants} 
@@ -195,15 +168,15 @@ const About = () => {
                 >
                   <div className="h-64 overflow-hidden">
                     <img 
-                      src={member.image} 
-                      alt={member.name}
+                      src={founder.image} 
+                      alt={founder.name}
                       className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                    <p className="text-green-600 mb-4">{member.role}</p>
-                    <p className="text-gray-600">{member.bio}</p>
+                    <h3 className="text-xl font-bold mb-1">{founder.name}</h3>
+                    <p className="text-green-600 mb-4">{founder.role}</p>
+                    <p className="text-gray-600">{founder.bio}</p>
                   </div>
                 </motion.div>
               ))}
