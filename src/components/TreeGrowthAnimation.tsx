@@ -1,7 +1,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useSpring, animated } from '@react-spring/three';
+import { useSpring, a } from '@react-spring/three';
 import { Environment, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -20,10 +20,10 @@ const TreeTrunk: React.FC<GrowthProps> = ({ growth }) => {
 
   return (
     <group ref={trunkRef} position={[0, 0, 0]}>
-      <animated.mesh position-y={height.to(h => h / 2)}>
-        <animated.cylinderGeometry args={[0.15, 0.3, height, 8]} />
+      <a.mesh position-y={height.to((h: number) => h / 2)}>
+        <a.cylinderGeometry args={[0.15, 0.3, height, 8]} />
         <meshStandardMaterial color="#8B4513" roughness={0.8} />
-      </animated.mesh>
+      </a.mesh>
     </group>
   );
 };
@@ -39,15 +39,12 @@ const TreeLeaves: React.FC<GrowthProps> = ({ growth }) => {
 
   return (
     <group ref={leavesRef}>
-      <animated.mesh 
-        position-y={posY}
-        scale-x={scale}
-        scale-y={scale}
-        scale-z={scale}
-      >
-        <coneGeometry args={[1, 2, 8]} />
-        <meshStandardMaterial color="#2E8B57" roughness={0.7} />
-      </animated.mesh>
+      <a.mesh position-y={posY}>
+        <a.mesh scale={scale.to((s: number) => [s, s, s])}>
+          <coneGeometry args={[1, 2, 8]} />
+          <meshStandardMaterial color="#2E8B57" roughness={0.7} />
+        </a.mesh>
+      </a.mesh>
     </group>
   );
 };
