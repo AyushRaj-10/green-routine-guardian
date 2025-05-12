@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useSpring, animated } from '@react-spring/three';
 import { Environment, OrbitControls } from '@react-three/drei';
@@ -14,7 +14,11 @@ const TreeTrunk = ({ growth }) => {
   });
 
   return (
-    <animated.mesh ref={trunkRef} position={[0, 0, 0]} scale={scale.to(value => value)}>
+    <animated.mesh 
+      ref={trunkRef} 
+      position={[0, 0, 0]} 
+      scale={scale}
+    >
       <cylinderGeometry args={[0.15, 0.3, 1, 8]} />
       <meshStandardMaterial color="#8B4513" roughness={0.8} />
     </animated.mesh>
@@ -24,17 +28,17 @@ const TreeTrunk = ({ growth }) => {
 const TreeLeaves = ({ growth }) => {
   const leavesRef = useRef();
   const { scale, position } = useSpring({
-    scale: growth * 1.5,
+    scale: [growth * 1.5, growth * 1.5, growth * 1.5],
     position: [0, growth * 1.5, 0],
-    from: { scale: 0.1, position: [0, 0.2, 0] },
+    from: { scale: [0.1, 0.1, 0.1], position: [0, 0.2, 0] },
     config: { mass: 1, tension: 80, friction: 20 }
   });
 
   return (
     <animated.mesh 
       ref={leavesRef} 
-      position={position.to(value => value)} 
-      scale={scale.to(value => value)}
+      position={position} 
+      scale={scale}
     >
       <coneGeometry args={[1, 2, 8]} />
       <meshStandardMaterial color="#2E8B57" roughness={0.7} />
@@ -73,9 +77,23 @@ const TreeAnimation = () => {
 };
 
 export const GrowingTree = () => {
+  const [errorState, setErrorState] = useState(false);
+
+  // Error boundary fallback
+  if (errorState) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-green-100">
+        <p className="text-green-800">Error loading 3D animation. Please refresh the page.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full w-full">
-      <Canvas camera={{ position: [0, 2, 5], fov: 45 }}>
+      <Canvas 
+        camera={{ position: [0, 2, 5], fov: 45 }}
+        onError={() => setErrorState(true)}
+      >
         <TreeAnimation />
         <OrbitControls 
           enableZoom={false}
