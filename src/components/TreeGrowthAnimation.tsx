@@ -1,5 +1,5 @@
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useSpring, animated } from '@react-spring/three';
 import { Environment, OrbitControls } from '@react-three/drei';
@@ -14,7 +14,7 @@ const TreeTrunk = ({ growth }) => {
   });
 
   return (
-    <animated.mesh ref={trunkRef} position={[0, 0, 0]} scale={scale}>
+    <animated.mesh ref={trunkRef} position={[0, 0, 0]} scale={scale.to(value => value)}>
       <cylinderGeometry args={[0.15, 0.3, 1, 8]} />
       <meshStandardMaterial color="#8B4513" roughness={0.8} />
     </animated.mesh>
@@ -31,7 +31,11 @@ const TreeLeaves = ({ growth }) => {
   });
 
   return (
-    <animated.mesh ref={leavesRef} position={position} scale={scale}>
+    <animated.mesh 
+      ref={leavesRef} 
+      position={position.to(value => value)} 
+      scale={scale.to(value => value)}
+    >
       <coneGeometry args={[1, 2, 8]} />
       <meshStandardMaterial color="#2E8B57" roughness={0.7} />
     </animated.mesh>
@@ -48,11 +52,11 @@ const Ground = () => {
 };
 
 const TreeAnimation = () => {
-  const [growth, setGrowth] = useRef(0.1);
+  const growthRef = useRef(0.1);
 
   useFrame(() => {
-    if (growth.current < 1) {
-      growth.current += 0.005;
+    if (growthRef.current < 1) {
+      growthRef.current += 0.005;
     }
   });
 
@@ -61,8 +65,8 @@ const TreeAnimation = () => {
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 10, 5]} intensity={1.5} castShadow />
       <Ground />
-      <TreeTrunk growth={growth.current} />
-      <TreeLeaves growth={growth.current} />
+      <TreeTrunk growth={growthRef.current} />
+      <TreeLeaves growth={growthRef.current} />
       <Environment preset="forest" />
     </>
   );

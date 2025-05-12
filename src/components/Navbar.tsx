@@ -52,7 +52,6 @@ const Navbar = () => {
         <Link 
           to="/"
           className="flex items-center group"
-          whileHover={{ scale: 1.05 }}
         >
           <motion.div 
             className="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center mr-3"
