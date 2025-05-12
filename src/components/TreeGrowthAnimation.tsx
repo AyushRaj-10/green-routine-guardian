@@ -1,127 +1,20 @@
 
-import { useRef, useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { useSpring, a } from '@react-spring/three';
-import { Environment, OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
+import React from 'react';
 
-// Type definitions to help TypeScript
-type GrowthProps = {
-  growth: number;
-};
-
-const TreeTrunk: React.FC<GrowthProps> = ({ growth }) => {
-  const trunkRef = useRef<THREE.Group>(null);
-  const { height } = useSpring({
-    height: growth * 2,
-    from: { height: 0.1 },
-    config: { mass: 1, tension: 80, friction: 20 }
-  });
-
+const GrowingTree: React.FC = () => {
   return (
-    <group ref={trunkRef} position={[0, 0, 0]}>
-      <a.mesh position-y={height.to((h: number) => h / 2)}>
-        <a.cylinderGeometry args={[0.15, 0.3, height, 8]} />
-        <meshStandardMaterial color="#8B4513" roughness={0.8} />
-      </a.mesh>
-    </group>
-  );
-};
-
-const TreeLeaves: React.FC<GrowthProps> = ({ growth }) => {
-  const leavesRef = useRef<THREE.Group>(null);
-  const { scale, posY } = useSpring({
-    scale: growth * 1.5,
-    posY: growth * 1.5,
-    from: { scale: 0.1, posY: 0.2 },
-    config: { mass: 1, tension: 80, friction: 20 }
-  });
-
-  return (
-    <group ref={leavesRef}>
-      <a.mesh position-y={posY}>
-        <a.mesh scale={scale.to((s: number) => [s, s, s])}>
-          <coneGeometry args={[1, 2, 8]} />
-          <meshStandardMaterial color="#2E8B57" roughness={0.7} />
-        </a.mesh>
-      </a.mesh>
-    </group>
-  );
-};
-
-const Ground = () => {
-  return (
-    <mesh position={[0, -0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[10, 10]} />
-      <meshStandardMaterial color="#8B7355" roughness={1} />
-    </mesh>
-  );
-};
-
-const TreeAnimation = () => {
-  const [growth, setGrowth] = useState(0.1);
-  
-  useEffect(() => {
-    let animationId: number;
-    let currentGrowth = 0.1;
-    
-    const animate = () => {
-      if (currentGrowth < 1) {
-        currentGrowth += 0.005;
-        setGrowth(currentGrowth);
-      }
-      animationId = requestAnimationFrame(animate);
-    };
-    
-    animate();
-    
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, []);
-
-  return (
-    <>
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[5, 10, 5]} intensity={1.5} castShadow />
-      <Ground />
-      <TreeTrunk growth={growth} />
-      <TreeLeaves growth={growth} />
-      <Environment preset="forest" />
-    </>
-  );
-};
-
-export const GrowingTree = () => {
-  const [errorState, setErrorState] = useState(false);
-
-  // Error boundary fallback
-  if (errorState) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-green-100">
-        <p className="text-green-800">Error loading 3D animation. Please refresh the page.</p>
+    <div className="h-full w-full bg-gradient-to-b from-green-900 via-green-800 to-green-700 flex items-center justify-center">
+      <div className="relative">
+        {/* Simple tree trunk */}
+        <div className="w-6 h-32 bg-amber-800 mx-auto rounded-sm"></div>
+        
+        {/* Simple tree foliage */}
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
+          <div className="w-32 h-32 bg-green-600 rounded-full opacity-90"></div>
+          <div className="w-40 h-40 bg-green-700 rounded-full -mt-24 ml-4 opacity-80"></div>
+          <div className="w-36 h-36 bg-green-500 rounded-full -mt-28 -ml-8 opacity-70"></div>
+        </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="h-full w-full">
-      <Canvas 
-        camera={{ position: [0, 2, 5], fov: 45 }}
-        onCreated={({ gl }) => {
-          gl.setClearColor(new THREE.Color('#000000'), 0);
-        }}
-        onError={() => setErrorState(true)}
-      >
-        <TreeAnimation />
-        <OrbitControls 
-          enableZoom={false}
-          enablePan={false}
-          rotateSpeed={0.4}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 4}
-        />
-      </Canvas>
     </div>
   );
 };

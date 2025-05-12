@@ -57,8 +57,8 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Tree Growth Animation Background */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-green-900/70 via-green-800/40 to-green-700/20">
+      {/* Static Tree Background instead of 3D animation */}
+      <div className="absolute inset-0 z-0">
         <GrowingTree />
       </div>
       
