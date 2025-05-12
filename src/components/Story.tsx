@@ -31,7 +31,7 @@ export const Story = () => {
       year: "2025",
       title: "Looking Forward",
       content: "With a growing user base and expanding features, GreenRoutine continues its mission to create a more sustainable future, one habit at a time.",
-      image: "https://images.unsplash.com/photo-1516900448138-f5491c34e232?auto=format&fit=crop&w=800"
+      image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dlooking%2Bforward&psig=AOvVaw2YsZI-iLlAbmxpc6dT0mfI&ust=1747142181932000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPCQqPuBno0DFQAAAAAdAAAAABAE"
     }
   ];
 
