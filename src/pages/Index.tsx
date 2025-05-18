@@ -15,6 +15,7 @@ import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { TreeDeciduous, HandHeart, Leaf, ParkCircle } from 'lucide-react';
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
@@ -54,11 +55,38 @@ const Index = () => {
     }
   }, [loading]);
 
-  // Leaderboard data with consistent names across the app
-  const leaderboardUsers = [
-    { id: 1, name: 'Ayush R.', points: 3450, avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
-    { id: 2, name: 'Arpita P.', points: 3280, avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
-    { id: 3, name: 'Astuti S.', points: 3105, avatar: 'https://randomuser.me/api/portraits/women/67.jpg' },
+  // Challenge of the month data
+  const challengesOfTheMonth = [
+    { 
+      id: 1, 
+      title: 'Plant a Tree',
+      description: 'Plant a tree in your community and share a photo of your contribution.',
+      points: 250,
+      image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
+      icon: <TreeDeciduous size={24} className="text-green-600" />,
+      difficulty: 'Medium',
+      participants: 287
+    },
+    { 
+      id: 2, 
+      title: 'Clean a Park',
+      description: 'Spend an hour cleaning a local park or beach with friends or family.',
+      points: 200,
+      image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80',
+      icon: <ParkCircle size={24} className="text-green-600" />,
+      difficulty: 'Easy',
+      participants: 342
+    },
+    { 
+      id: 3, 
+      title: 'Help at a Local Shelter',
+      description: 'Volunteer at a local animal shelter or old age home for a day.',
+      points: 300,
+      image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800&q=80',
+      icon: <HandHeart size={24} className="text-green-600" />,
+      difficulty: 'Hard',
+      participants: 156
+    }
   ];
 
   if (loading) {
@@ -185,50 +213,64 @@ const Index = () => {
       
       <FAQ />
       
-      <section id="leaderboard-preview" className="py-16 bg-gray-50">
+      {/* Challenge of the Month Section (replacing leaderboard) */}
+      <section id="challenge-of-month" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Community Leaderboard</h2>
+          <h2 className="text-3xl font-bold mb-6">Challenge of the Month</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join our community of eco-warriors and track your progress on the leaderboard
+            Join our monthly eco-challenges and earn points while making a positive impact on the environment
           </p>
           
-          {/* Leaderboard preview */}
-          <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b">
-              <span className="font-bold text-lg">Top Contributors</span>
-              <Button asChild>
-                <Link to="/dashboard">View Full Leaderboard</Link>
-              </Button>
-            </div>
-            
-            <div className="p-4 space-y-4">
-              {leaderboardUsers.map((user, index) => (
-                <div key={user.id} className="flex items-center p-2 rounded-lg hover:bg-gray-50">
-                  <div className="mr-3 font-bold text-lg text-gray-500 w-6 text-center">
-                    {index + 1}
-                  </div>
-                  <div className="h-10 w-10 rounded-full overflow-hidden mr-3">
-                    <img 
-                      src={user.avatar} 
-                      alt={`${user.name} avatar`}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{user.name}</span>
-                      <span className="font-bold text-green-500">{user.points}</span>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {challengesOfTheMonth.map((challenge) => (
+              <motion.div
+                key={challenge.id}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="h-48 overflow-hidden relative">
+                  <img 
+                    src={challenge.image}
+                    alt={challenge.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4 bg-white/90 p-1 px-3 rounded-full text-sm font-medium">
+                    {challenge.points} points
                   </div>
                 </div>
-              ))}
-            </div>
-            
-            <div className="bg-gray-50 p-4 text-center">
-              <Button variant="outline" asChild>
-                <Link to="/dashboard">Join the Leaderboard</Link>
-              </Button>
-            </div>
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-green-100 p-2 rounded-full mr-3">
+                      {challenge.icon}
+                    </div>
+                    <h3 className="font-bold text-xl">{challenge.title}</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">{challenge.description}</p>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-sm text-gray-500">{challenge.participants} participants</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      challenge.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                      challenge.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {challenge.difficulty}
+                    </span>
+                  </div>
+                  <Button className="w-full bg-green-600 hover:bg-green-700" asChild>
+                    <Link to="/challenges">Join Challenge</Link>
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          <div className="mt-8">
+            <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50" asChild>
+              <Link to="/challenges">View All Challenges</Link>
+            </Button>
           </div>
         </div>
       </section>
