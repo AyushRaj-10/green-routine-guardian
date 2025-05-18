@@ -55,13 +55,13 @@ const Index = () => {
     }
   }, [loading]);
 
-  // Challenge of the month data
+  // Challenge of the month data with increased points
   const challengesOfTheMonth = [
     { 
       id: 1, 
       title: 'Plant a Tree',
       description: 'Plant a tree in your community and share a photo of your contribution.',
-      points: 250,
+      points: 500,  // Increased points
       image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
       icon: <TreeDeciduous size={24} className="text-green-600" />,
       difficulty: 'Medium',
@@ -71,7 +71,7 @@ const Index = () => {
       id: 2, 
       title: 'Clean a Park',
       description: 'Spend an hour cleaning a local park or beach with friends or family.',
-      points: 200,
+      points: 450,  // Increased points
       image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80',
       icon: <ParkingCircle size={24} className="text-green-600" />,
       difficulty: 'Easy',
@@ -81,7 +81,7 @@ const Index = () => {
       id: 3, 
       title: 'Help at a Local Shelter',
       description: 'Volunteer at a local animal shelter or old age home for a day.',
-      points: 300,
+      points: 600,  // Increased points
       image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800&q=80',
       icon: <HandHeart size={24} className="text-green-600" />,
       difficulty: 'Hard',
@@ -213,7 +213,7 @@ const Index = () => {
       
       <FAQ />
       
-      {/* Challenge of the Month Section (replacing leaderboard) */}
+      {/* Challenge of the Month Section */}
       <section id="challenge-of-month" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Challenge of the Month</h2>
@@ -270,6 +270,185 @@ const Index = () => {
           <div className="mt-8">
             <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50" asChild>
               <Link to="/challenges">View All Challenges</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+      
+      {/* Community Section */}
+      <section id="community" className="py-16 bg-green-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold mb-4">Community Stories</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Join our community of eco-warriors sharing their stories and inspiring others
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+            {/* Community Story 1 */}
+            <motion.div 
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&q=80" 
+                  alt="Energy saving initiative" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <img 
+                    src="https://randomuser.me/api/portraits/women/44.jpg" 
+                    alt="Jennifer L." 
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">Jennifer L.</p>
+                    <p className="text-xs text-gray-500">Posted 3 days ago</p>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-2">My Energy Saving Journey</h3>
+                <p className="text-gray-600 mb-4">
+                  I've managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine...
+                </p>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                      </svg>
+                      <span>42</span>
+                    </button>
+                    <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                      </svg>
+                      <span>12</span>
+                    </button>
+                  </div>
+                  <Button size="sm" variant="outline" className="text-green-600 border-green-500 hover:bg-green-50">
+                    Read More
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Community Story 2 */}
+            <motion.div 
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80" 
+                  alt="Sustainable home" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <img 
+                    src="https://randomuser.me/api/portraits/men/32.jpg" 
+                    alt="Robert W." 
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">Robert W.</p>
+                    <p className="text-xs text-gray-500">Posted 1 week ago</p>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Creating a Sustainable Home</h3>
+                <p className="text-gray-600 mb-4">
+                  I've transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same...
+                </p>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                      </svg>
+                      <span>78</span>
+                    </button>
+                    <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                      </svg>
+                      <span>24</span>
+                    </button>
+                  </div>
+                  <Button size="sm" variant="outline" className="text-green-600 border-green-500 hover:bg-green-50">
+                    Read More
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Community Story 3 */}
+            <motion.div 
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=800&q=80" 
+                  alt="Park cleanup" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <img 
+                    src="https://randomuser.me/api/portraits/women/67.jpg" 
+                    alt="Ashley T." 
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">Ashley T.</p>
+                    <p className="text-xs text-gray-500">Posted 2 weeks ago</p>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Park Cleanup Success</h3>
+                <p className="text-gray-600 mb-4">
+                  Our community came together to clean up Jefferson Park last weekend. We collected over 50 bags of trash and recyclables...
+                </p>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                      </svg>
+                      <span>105</span>
+                    </button>
+                    <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                      </svg>
+                      <span>36</span>
+                    </button>
+                  </div>
+                  <Button size="sm" variant="outline" className="text-green-600 border-green-500 hover:bg-green-50">
+                    Read More
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="flex justify-center">
+            <Button className="bg-green-600 hover:bg-green-700">
+              Share Your Story
             </Button>
           </div>
         </div>
