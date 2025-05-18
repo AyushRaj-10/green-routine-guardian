@@ -36,11 +36,14 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Add background to navbar when at top of page for better contrast
+  const navbarBackground = isScrolled ? 'bg-white/90 shadow-md backdrop-blur-sm' : 'bg-green-600/90 backdrop-blur-sm';
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/90 shadow-md backdrop-blur-sm py-2' : 'bg-transparent py-4'
-      }`}
+        navbarBackground
+      } py-3`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
@@ -51,7 +54,7 @@ const Navbar = () => {
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
           </div>
-          <span className={`text-xl font-bold ${isScrolled ? 'text-green-800' : 'text-white'}`}>
+          <span className="text-xl font-bold text-white">
             GreenRoutine
           </span>
         </Link>
@@ -61,11 +64,11 @@ const Navbar = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className={isScrolled ? 'text-green-800' : 'text-white'}>
+                <NavigationMenuTrigger className="text-white bg-transparent hover:bg-green-700/50">
                   About
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-white">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link to="/about" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
@@ -110,11 +113,11 @@ const Navbar = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className={isScrolled ? 'text-green-800' : 'text-white'}>
+                <NavigationMenuTrigger className="text-white bg-transparent hover:bg-green-700/50">
                   Features
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-white">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link to="/reminders" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
@@ -159,16 +162,12 @@ const Navbar = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/calculator" className={`inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-green-800 hover:text-green-900' : 'text-white hover:text-green-100'
-                }`}>
+                <Link to="/calculator" className="inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors text-white hover:bg-green-700/50">
                   Calculator
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/faq" className={`inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-green-800 hover:text-green-900' : 'text-white hover:text-green-100'
-                }`}>
+                <Link to="/faq" className="inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors text-white hover:bg-green-700/50">
                   FAQ
                 </Link>
               </NavigationMenuItem>
@@ -178,9 +177,7 @@ const Navbar = () => {
 
         {/* CTA Button */}
         <div className="flex items-center gap-4">
-          <Button variant={isScrolled ? "default" : "outline"} size="sm" className={
-            isScrolled ? "bg-green-500 hover:bg-green-600" : "border-white text-white hover:bg-white/20"
-          } asChild>
+          <Button variant="outline" size="sm" className="border-white text-white hover:bg-white/20" asChild>
             <Link to="/dashboard">Get Started</Link>
           </Button>
           
@@ -190,9 +187,9 @@ const Navbar = () => {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
-              <X className={isScrolled ? "text-green-800" : "text-white"} />
+              <X className="text-white" />
             ) : (
-              <Menu className={isScrolled ? "text-green-800" : "text-white"} />
+              <Menu className="text-white" />
             )}
           </button>
         </div>

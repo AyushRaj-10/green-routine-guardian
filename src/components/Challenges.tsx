@@ -1,6 +1,7 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const challenges = [
   {
@@ -9,41 +10,41 @@ const challenges = [
     description: 'Avoid using single-use plastics for an entire week.',
     difficulty: 'Medium',
     points: 250,
-    participants: 1245,
-    image: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fplastic-free&psig=AOvVaw3kHJb1lob0TkeWnYMqU8j0&ust=1747142333583000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMD_xciCno0DFQAAAAAdAAAAABAK',
+    participants: 1240,
+    image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800&q=80',
     category: 'waste',
     status: 'active',
   },
   {
     id: 2,
-    title: '5-Minute Showers',
-    description: 'Limit your showers to 5 minutes or less for two weeks.',
+    title: '30-Day Water Conservation',
+    description: 'Reduce your water consumption through simple daily actions.',
     difficulty: 'Easy',
     points: 150,
     participants: 2187,
-    image: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2hvd2VyfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+    image: 'https://images.unsplash.com/photo-1487252665478-49b61b47f302?auto=format&fit=crop&w=800&q=80',
     category: 'water',
     status: 'upcoming',
   },
   {
     id: 3,
-    title: 'Meatless Month',
-    description: 'Go vegetarian for 30 days to reduce your carbon footprint.',
+    title: 'Zero Waste Month',
+    description: 'Minimize your household waste and aim for zero landfill contribution.',
     difficulty: 'Hard',
     points: 500,
     participants: 943,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnZXRhcmlhbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+    image: 'https://images.unsplash.com/photo-1466721591366-2d5fba72006d?auto=format&fit=crop&w=800&q=80',
     category: 'food',
     status: 'completed',
   },
   {
     id: 4,
-    title: 'No-Drive Weekend',
-    description: 'Use only public transportation, biking, or walking for weekends.',
+    title: 'Plant-Based Diet Challenge',
+    description: 'Adopt a plant-based diet for two weeks to reduce carbon footprint.',
     difficulty: 'Medium',
     points: 200,
-    participants: 1658,
-    image: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.intrepidtravel.com%2Fadventures%2Fguide-delhi-metro-india%2F&psig=AOvVaw2AIwgtjTMFsHTp4VtNxLhT&ust=1747142383780000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDM3d6Cno0DFQAAAAAdAAAAABAE',
+    participants: 2120,
+    image: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80',
     category: 'transport',
     status: 'active',
   },
@@ -173,9 +174,11 @@ const Challenges = () => {
                       <span className="text-sm text-gray-500">{challenge.participants} participants</span>
                       <span className="font-bold text-green-500">{challenge.points} points</span>
                     </div>
-                    <Button className="w-full mt-4">
-                      {challenge.status === 'active' ? 'Join Challenge' : 
-                       challenge.status === 'upcoming' ? 'Get Notified' : 'View Results'}
+                    <Button className="w-full mt-4" asChild>
+                      <Link to="/challenges">
+                        {challenge.status === 'active' ? 'Join Challenge' : 
+                        challenge.status === 'upcoming' ? 'Get Notified' : 'View Results'}
+                      </Link>
                     </Button>
                   </div>
                 </motion.div>
@@ -183,7 +186,9 @@ const Challenges = () => {
             </div>
             
             <div className="text-center mt-8">
-              <Button variant="outline">View All Challenges</Button>
+              <Button variant="outline" asChild>
+                <Link to="/challenges">View All Challenges</Link>
+              </Button>
             </div>
           </div>
           
