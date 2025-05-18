@@ -131,7 +131,7 @@ const ChallengesPage = () => {
       },
       title: 'My First Tree Planting Experience',
       content: 'I participated in the tree planting challenge this month and it was such a rewarding experience! I planted an oak tree in my local community garden. The process was easier than I expected, and I learned so much about proper tree care. Already looking forward to watching it grow over the coming years.',
-      image: 'https://images.unsplash.com/photo-1502839405393-37888b38a066?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
       postedAt: '3 weeks ago',
       likes: 67,
       comments: 18
