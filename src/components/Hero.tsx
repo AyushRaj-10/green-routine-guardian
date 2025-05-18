@@ -77,26 +77,26 @@ const Hero = () => {
           Get reminders, track your impact, and join challenges to build a greener future.
         </p>
         <div ref={ctaRef} className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button className="bg-green-500 hover:bg-green-600 text-lg py-6 px-8 shadow-lg hover:scale-105 transition-transform" asChild>
+          <Button className="bg-green-600 hover:bg-green-700 text-white text-lg py-6 px-8 shadow-lg hover:scale-105 transition-transform font-semibold" asChild>
             <Link to="/dashboard">Get Started</Link>
           </Button>
-          <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg py-6 px-8 shadow-md hover:scale-105 transition-transform" asChild>
+          <Button variant="outline" className="border-white text-white border-2 bg-black/30 hover:bg-white/30 text-lg py-6 px-8 shadow-md hover:scale-105 transition-transform font-semibold" asChild>
             <Link to="/about">Learn More</Link>
           </Button>
         </div>
         
         {/* Feature Links */}
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white hover:scale-105 transition-transform" asChild>
+          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
             <Link to="/reminders">Reminders</Link>
           </Button>
-          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white hover:scale-105 transition-transform" asChild>
+          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
             <Link to="/challenges">Challenges</Link>
           </Button>
-          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white hover:scale-105 transition-transform" asChild>
+          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
             <Link to="/calculator">Calculator</Link>
           </Button>
-          <Button variant="ghost" className="bg-white/10 hover:bg-white/20 text-white hover:scale-105 transition-transform" asChild>
+          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
             <Link to="/faq">FAQ</Link>
           </Button>
         </div>

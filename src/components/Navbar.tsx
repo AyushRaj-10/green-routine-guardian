@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -36,8 +35,8 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Add background to navbar when at top of page for better contrast
-  const navbarBackground = isScrolled ? 'bg-white/90 shadow-md backdrop-blur-sm' : 'bg-green-600/90 backdrop-blur-sm';
+  // Keep background consistent for better contrast (always green)
+  const navbarBackground = 'bg-green-600/95 backdrop-blur-sm' + (isScrolled ? ' shadow-md' : '');
 
   return (
     <header
@@ -177,7 +176,7 @@ const Navbar = () => {
 
         {/* CTA Button */}
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" className="border-white text-white hover:bg-white/20" asChild>
+          <Button size="sm" className="bg-white text-green-700 hover:bg-green-100 font-semibold" asChild>
             <Link to="/dashboard">Get Started</Link>
           </Button>
           

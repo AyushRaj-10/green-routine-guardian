@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
 import Navbar from '@/components/Navbar';
@@ -54,6 +53,13 @@ const Index = () => {
       return () => clearInterval(interval);
     }
   }, [loading]);
+
+  // Leaderboard data with consistent names across the app
+  const leaderboardUsers = [
+    { id: 1, name: 'Ayush R.', points: 3450, avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
+    { id: 2, name: 'Arpita P.', points: 3280, avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
+    { id: 3, name: 'Astuti S.', points: 3105, avatar: 'https://randomuser.me/api/portraits/women/67.jpg' },
+  ];
 
   if (loading) {
     return <LoadingScreen onLoadingComplete={() => setLoading(false)} />;
@@ -196,24 +202,22 @@ const Index = () => {
             </div>
             
             <div className="p-4 space-y-4">
-              {[1, 2, 3].map(index => (
-                <div key={index} className="flex items-center p-2 rounded-lg hover:bg-gray-50">
+              {leaderboardUsers.map((user, index) => (
+                <div key={user.id} className="flex items-center p-2 rounded-lg hover:bg-gray-50">
                   <div className="mr-3 font-bold text-lg text-gray-500 w-6 text-center">
-                    {index}
+                    {index + 1}
                   </div>
                   <div className="h-10 w-10 rounded-full overflow-hidden mr-3">
                     <img 
-                      src={`https://randomuser.me/api/portraits/${index === 1 ? 'men/32' : 'women/' + (32 + index)}.jpg`} 
-                      alt="User avatar"
+                      src={user.avatar} 
+                      alt={`${user.name} avatar`}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <span className="font-medium">
-                        {index === 1 ? 'Ayush R.' : index === 2 ? 'Arpita P.' : 'Astuti S.'}
-                      </span>
-                      <span className="font-bold text-green-500">{3500 - (index - 1) * 200}</span>
+                      <span className="font-medium">{user.name}</span>
+                      <span className="font-bold text-green-500">{user.points}</span>
                     </div>
                   </div>
                 </div>

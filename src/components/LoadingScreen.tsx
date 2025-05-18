@@ -9,8 +9,7 @@ interface LoadingScreenProps {
 
 const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const greenRef = useRef<HTMLDivElement>(null);
-  const routineRef = useRef<HTMLDivElement>(null);
+  const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
     const tl = gsap.timeline({
@@ -24,39 +23,52 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
       }
     });
 
-    // Animate the "Green" text from top
-    tl.fromTo(greenRef.current,
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "bounce.out" }
-    );
+    // Animate each letter of "GREEN" dropping from top
+    const greenLetters = ["G", "R", "E", "E", "N"];
+    greenLetters.forEach((_, index) => {
+      tl.fromTo(
+        letterRefs.current[index],
+        { y: -100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, ease: "bounce.out" },
+        index * 0.15 // Stagger the animations
+      );
+    });
 
-    // Animate the "Routine" text from bottom
-    tl.fromTo(routineRef.current,
-      { y: 100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "bounce.out" },
-      "-=0.5" // Start a bit before the first animation completes
-    );
+    // Animate each letter of "ROUTINE" dropping from bottom
+    const routineLetters = ["R", "O", "U", "T", "I", "N", "E"];
+    routineLetters.forEach((_, index) => {
+      tl.fromTo(
+        letterRefs.current[index + 5], // Offset by 5 (length of "GREEN")
+        { y: 100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, ease: "bounce.out" },
+        1 + index * 0.15 // Start after GREEN with stagger
+      );
+    });
 
     // Add a delay before completing
-    tl.to({}, { duration: 1 });
+    tl.to({}, { duration: 0.5 });
 
     return () => {
       tl.kill();
     };
   }, [onLoadingComplete]);
 
+  // Create arrays for the letters
+  const greenLetters = ["G", "R", "E", "E", "N"];
+  const routineLetters = ["R", "O", "U", "T", "I", "N", "E"];
+
   return (
     <div 
       ref={containerRef} 
       className="fixed inset-0 bg-green-500 z-50 flex items-center justify-center"
     >
-      <div className="relative flex flex-col items-center justify-center h-36">
+      <div className="relative flex flex-col items-center justify-center">
         {/* Environmental tip bubbles */}
         <motion.div 
           className="absolute -top-20 left-20 bg-green-600 text-white text-sm p-2 rounded-lg"
           initial={{ scale: 0 }}
           animate={{ scale: [0, 1.1, 1] }}
-          transition={{ delay: 1.5, duration: 0.5 }}
+          transition={{ delay: 2.5, duration: 0.5 }}
         >
           Save water
         </motion.div>
@@ -65,7 +77,7 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
           className="absolute -bottom-20 right-20 bg-green-600 text-white text-sm p-2 rounded-lg"
           initial={{ scale: 0 }}
           animate={{ scale: [0, 1.1, 1] }}
-          transition={{ delay: 1.8, duration: 0.5 }}
+          transition={{ delay: 2.8, duration: 0.5 }}
         >
           Reduce plastic
         </motion.div>
@@ -74,24 +86,34 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
           className="absolute -left-20 bg-green-600 text-white text-sm p-2 rounded-lg"
           initial={{ scale: 0 }}
           animate={{ scale: [0, 1.1, 1] }}
-          transition={{ delay: 2.1, duration: 0.5 }}
+          transition={{ delay: 3.1, duration: 0.5 }}
         >
           Plant trees
         </motion.div>
         
-        {/* Green Routine text */}
+        {/* Green Routine text with individual letter animations */}
         <div className="flex flex-col items-center">
-          <div 
-            ref={greenRef} 
-            className="text-5xl md:text-7xl font-bold text-white mb-2"
-          >
-            Green
+          <div className="flex mb-2">
+            {greenLetters.map((letter, index) => (
+              <span
+                key={`green-${index}`}
+                ref={el => letterRefs.current[index] = el}
+                className="text-5xl md:text-7xl font-bold text-white mx-1"
+              >
+                {letter}
+              </span>
+            ))}
           </div>
-          <div 
-            ref={routineRef} 
-            className="text-5xl md:text-7xl font-bold text-white"
-          >
-            Routine
+          <div className="flex">
+            {routineLetters.map((letter, index) => (
+              <span
+                key={`routine-${index}`}
+                ref={el => letterRefs.current[index + 5] = el}
+                className="text-5xl md:text-7xl font-bold text-black mx-1"
+              >
+                {letter}
+              </span>
+            ))}
           </div>
         </div>
         
