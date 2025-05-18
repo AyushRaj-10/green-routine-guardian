@@ -88,7 +88,7 @@ const ChallengesPage = () => {
         level: 'Gold'
       },
       title: 'My Energy Saving Journey',
-      content: 'I've managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine. I started by replacing all light bulbs with LED alternatives, setting up timers for electronics, and being more mindful about my energy consumption. The difference is noticeable both for the environment and my utility bills!',
+      content: "I've managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine. I started by replacing all light bulbs with LED alternatives, setting up timers for electronics, and being more mindful about my energy consumption. The difference is noticeable both for the environment and my utility bills!",
       image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&q=80',
       postedAt: '3 days ago',
       likes: 42,
@@ -102,7 +102,7 @@ const ChallengesPage = () => {
         level: 'Silver'
       },
       title: 'Creating a Sustainable Home',
-      content: 'I've transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same: use natural cleaning products, set up rainwater collection, compost food waste, and invest in energy-efficient appliances. Small changes really do add up to make a big difference!',
+      content: "I've transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same: use natural cleaning products, set up rainwater collection, compost food waste, and invest in energy-efficient appliances. Small changes really do add up to make a big difference!",
       image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80',
       postedAt: '1 week ago',
       likes: 78,
