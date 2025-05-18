@@ -15,7 +15,7 @@ import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TreeDeciduous, HandHeart, Leaf, ParkCircle } from 'lucide-react';
+import { TreeDeciduous, HandHeart, Leaf, ParkingCircle } from 'lucide-react';
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
@@ -73,7 +73,7 @@ const Index = () => {
       description: 'Spend an hour cleaning a local park or beach with friends or family.',
       points: 200,
       image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80',
-      icon: <ParkCircle size={24} className="text-green-600" />,
+      icon: <ParkingCircle size={24} className="text-green-600" />,
       difficulty: 'Easy',
       participants: 342
     },
