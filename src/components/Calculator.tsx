@@ -1,7 +1,8 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { 
   calculateElectricityEmissions, 
   calculateWaterEmissions,
@@ -31,11 +32,29 @@ const Calculator = () => {
     const waterSaved = calculateWaterSaved(water);
     const costSavings = calculateCostSavings(electricity, water);
     
+    // Prepare chart data
+    const chartData = [
+      { name: 'Electricity', value: electricityEmissions, color: '#fbbf24' },
+      { name: 'Water', value: waterEmissions, color: '#3b82f6' },
+      { name: 'Transport', value: transportEmissions, color: '#ef4444' }
+    ].filter(item => item.value > 0);
+
+    const barData = [
+      { category: 'Electricity', emissions: electricityEmissions },
+      { category: 'Water', emissions: waterEmissions },
+      { category: 'Transport', emissions: transportEmissions }
+    ];
+    
     setResults({
       totalEmissions,
       treesNeeded,
       waterSaved,
       costSavings,
+      chartData,
+      barData,
+      electricityEmissions,
+      waterEmissions,
+      transportEmissions
     });
   };
 
@@ -45,6 +64,13 @@ const Calculator = () => {
     setDistance(0);
     setTransportType('car');
     setResults(null);
+  };
+
+  const getImpactLevel = (emissions: number) => {
+    if (emissions < 50) return { level: 'Low', color: 'bg-green-500', percentage: 25 };
+    if (emissions < 150) return { level: 'Medium', color: 'bg-yellow-500', percentage: 50 };
+    if (emissions < 300) return { level: 'High', color: 'bg-orange-500', percentage: 75 };
+    return { level: 'Very High', color: 'bg-red-500', percentage: 100 };
   };
 
   return (
@@ -57,8 +83,8 @@ const Calculator = () => {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="grid md:grid-cols-2">
+        <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="grid lg:grid-cols-3">
             <div className="p-8 bg-green-600">
               <h3 className="text-2xl font-bold text-white mb-6">Enter Your Usage</h3>
               
@@ -130,44 +156,148 @@ const Calculator = () => {
               </div>
             </div>
             
-            <div className="p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">Your Impact</h3>
+            <div className="lg:col-span-2 p-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">Your Environmental Impact</h3>
               
               {results ? (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-500">CO2 Emissions</p>
-                    <p className="text-2xl font-bold text-gray-800">{formatNumber(results.totalEmissions)} kg</p>
+                  {/* Impact Overview */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <div className="flex justify-between items-center mb-4">
+                        <p className="text-gray-500">Total CO2 Emissions</p>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getImpactLevel(results.totalEmissions).color} text-white`}>
+                          {getImpactLevel(results.totalEmissions).level}
+                        </span>
+                      </div>
+                      <p className="text-3xl font-bold text-gray-800 mb-4">{formatNumber(results.totalEmissions)} kg</p>
+                      <Progress 
+                        value={getImpactLevel(results.totalEmissions).percentage} 
+                        className="h-2"
+                      />
+                    </div>
+                    
+                    <div className="bg-green-50 p-6 rounded-lg">
+                      <p className="text-gray-500 mb-2">Trees Needed to Offset</p>
+                      <p className="text-3xl font-bold text-green-600 mb-4">{formatNumber(results.treesNeeded)} trees</p>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span>🌳 Each tree absorbs ~25kg CO2/year</span>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <p className="text-gray-500">Trees Needed to Offset</p>
-                    <p className="text-2xl font-bold text-green-600">{formatNumber(results.treesNeeded)} trees</p>
+
+                  {/* Charts Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Pie Chart */}
+                    <div className="bg-white border rounded-lg p-6">
+                      <h4 className="text-lg font-semibold mb-4">Emissions Breakdown</h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <PieChart>
+                          <Pie
+                            data={results.chartData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={80}
+                            paddingAngle={5}
+                            dataKey="value"
+                          >
+                            {results.chartData.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(value: any) => [`${formatNumber(value)} kg`, 'CO2 Emissions']} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex justify-center space-x-4 mt-2">
+                        {results.chartData.map((entry: any, index: number) => (
+                          <div key={index} className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-1`} style={{ backgroundColor: entry.color }}></div>
+                            <span className="text-sm text-gray-600">{entry.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bar Chart */}
+                    <div className="bg-white border rounded-lg p-6">
+                      <h4 className="text-lg font-semibold mb-4">Category Comparison</h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={results.barData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="category" />
+                          <YAxis />
+                          <Tooltip formatter={(value: any) => [`${formatNumber(value)} kg`, 'CO2 Emissions']} />
+                          <Bar dataKey="emissions" fill="#10b981" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                  
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-gray-500">Water That Could Be Saved</p>
-                    <p className="text-2xl font-bold text-blue-600">{formatNumber(results.waterSaved)} liters</p>
+
+                  {/* Detailed Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <p className="text-gray-500 text-sm">Water Conservation Potential</p>
+                      <p className="text-2xl font-bold text-blue-600">{formatNumber(results.waterSaved)} L</p>
+                      <p className="text-xs text-gray-600 mt-1">30% reduction estimate</p>
+                    </div>
+                    
+                    <div className="bg-orange-50 p-4 rounded-lg">
+                      <p className="text-gray-500 text-sm">Potential Annual Savings</p>
+                      <p className="text-2xl font-bold text-orange-600">${formatNumber(results.costSavings * 12)}</p>
+                      <p className="text-xs text-gray-600 mt-1">Through efficiency improvements</p>
+                    </div>
+
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                      <p className="text-gray-500 text-sm">Environmental Score</p>
+                      <p className="text-2xl font-bold text-purple-600">{Math.max(100 - Math.round(results.totalEmissions / 5), 0)}/100</p>
+                      <p className="text-xs text-gray-600 mt-1">Lower emissions = higher score</p>
+                    </div>
                   </div>
-                  
-                  <div className="bg-orange-50 p-4 rounded-lg">
-                    <p className="text-gray-500">Potential Cost Savings</p>
-                    <p className="text-2xl font-bold text-orange-600">${formatNumber(results.costSavings)}</p>
+
+                  {/* Action Recommendations */}
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg">
+                    <h4 className="text-lg font-semibold mb-4">💡 Recommendations to Reduce Your Impact</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {results.electricityEmissions > 50 && (
+                        <div className="flex items-start space-x-3">
+                          <span className="text-yellow-500">⚡</span>
+                          <span className="text-sm">Switch to LED bulbs and unplug devices when not in use</span>
+                        </div>
+                      )}
+                      {results.transportEmissions > 50 && (
+                        <div className="flex items-start space-x-3">
+                          <span className="text-blue-500">🚲</span>
+                          <span className="text-sm">Consider cycling, walking, or public transport for short trips</span>
+                        </div>
+                      )}
+                      {results.waterEmissions > 20 && (
+                        <div className="flex items-start space-x-3">
+                          <span className="text-blue-400">💧</span>
+                          <span className="text-sm">Take shorter showers and fix any water leaks</span>
+                        </div>
+                      )}
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-500">🌱</span>
+                        <span className="text-sm">Join our challenges to make sustainable changes step by step</span>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-16">
                   <svg className="h-16 w-16 text-gray-300 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="12"></line>
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                   </svg>
-                  <p>Enter your usage data and click Calculate to see your environmental impact</p>
+                  <p className="text-lg mb-2">Ready to Calculate Your Impact?</p>
+                  <p>Enter your usage data and click Calculate to see detailed insights</p>
                 </div>
               )}
             </div>

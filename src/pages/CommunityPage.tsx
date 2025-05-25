@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Image, Send } from 'lucide-react';
+import { Heart, MessageCircle, Image, Send, Trash2 } from 'lucide-react';
 
 const CommunityPage = () => {
   const [stories, setStories] = useState([
@@ -20,7 +19,8 @@ const CommunityPage = () => {
       image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&q=80',
       postedAt: '3 days ago',
       likes: 42,
-      comments: 12
+      comments: 12,
+      isOwner: false
     },
     {
       id: '2',
@@ -34,7 +34,8 @@ const CommunityPage = () => {
       image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80',
       postedAt: '1 week ago',
       likes: 78,
-      comments: 24
+      comments: 24,
+      isOwner: false
     },
     {
       id: '3',
@@ -48,7 +49,8 @@ const CommunityPage = () => {
       image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=800&q=80',
       postedAt: '2 weeks ago',
       likes: 105,
-      comments: 36
+      comments: 36,
+      isOwner: false
     },
     {
       id: '4',
@@ -62,7 +64,8 @@ const CommunityPage = () => {
       image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
       postedAt: '3 weeks ago',
       likes: 67,
-      comments: 18
+      comments: 18,
+      isOwner: false
     }
   ]);
 
@@ -82,7 +85,8 @@ const CommunityPage = () => {
         image: newStory.image || '',
         postedAt: 'Just now',
         likes: 0,
-        comments: 0
+        comments: 0,
+        isOwner: true
       };
       setStories([story, ...stories]);
       setNewStory({ title: '', content: '', image: '' });
@@ -95,6 +99,10 @@ const CommunityPage = () => {
         ? { ...story, likes: story.likes + 1 }
         : story
     ));
+  };
+
+  const handleDeleteStory = (storyId: string) => {
+    setStories(stories.filter(story => story.id !== storyId));
   };
 
   return (
@@ -194,6 +202,16 @@ const CommunityPage = () => {
                         <p className="text-xs text-gray-500">Posted {story.postedAt}</p>
                       </div>
                     </div>
+                    {story.isOwner && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteStory(story.id)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                   
                   <h3 className="text-xl font-bold mb-3">{story.title}</h3>

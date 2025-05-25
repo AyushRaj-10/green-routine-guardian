@@ -1,13 +1,13 @@
+
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Check, TreeDeciduous, HandHeart, Leaf, Users } from 'lucide-react';
+import { Check, Leaf } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ChallengesPage = () => {
   const [joinedChallenges, setJoinedChallenges] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'challenges' | 'community'>('challenges');
 
   // Regular challenges with normal points
   const challenges = [
@@ -19,7 +19,7 @@ const ChallengesPage = () => {
       participants: 1240,
       duration: '7 days',
       difficulty: 'Medium',
-      points: 300, // Normal challenge points
+      points: 300,
       impact: 'Prevent ~5kg of plastic waste'
     },
     {
@@ -30,7 +30,7 @@ const ChallengesPage = () => {
       participants: 3450,
       duration: '30 days',
       difficulty: 'Easy',
-      points: 250, // Normal challenge points
+      points: 250,
       impact: 'Save up to 1500 liters of water'
     },
     {
@@ -41,7 +41,7 @@ const ChallengesPage = () => {
       participants: 890,
       duration: '30 days',
       difficulty: 'Hard',
-      points: 500, // Normal challenge points
+      points: 500,
       impact: 'Reduce ~20kg of landfill waste'
     },
     {
@@ -52,7 +52,7 @@ const ChallengesPage = () => {
       participants: 2120,
       duration: '14 days',
       difficulty: 'Medium',
-      points: 350, // Normal challenge points
+      points: 350,
       impact: 'Reduce ~75kg CO2 emissions'
     },
     {
@@ -63,18 +63,18 @@ const ChallengesPage = () => {
       participants: 756,
       duration: '7 days',
       difficulty: 'Medium',
-      points: 275, // Normal challenge points
+      points: 275,
       impact: 'Reduce ~25kg CO2 emissions'
     },
     {
       id: '6',
       title: 'Energy Efficient Home',
       description: 'Reduce your home energy consumption by 20% in one month',
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80',
       participants: 432,
       duration: '30 days',
       difficulty: 'Hard',
-      points: 450, // Normal challenge points
+      points: 450,
       impact: 'Save ~200kWh of energy'
     }
   ];
@@ -89,7 +89,7 @@ const ChallengesPage = () => {
       participants: 287,
       duration: '1 day',
       difficulty: 'Medium',
-      points: 750, // Challenge of the month bonus points
+      points: 750,
       impact: 'Absorb ~20kg CO2 per year',
       isSpecial: true
     },
@@ -101,7 +101,7 @@ const ChallengesPage = () => {
       participants: 156,
       duration: '1 day',
       difficulty: 'Hard',
-      points: 900, // Challenge of the month bonus points
+      points: 900,
       impact: 'Improve community well-being',
       isSpecial: true
     },
@@ -113,68 +113,9 @@ const ChallengesPage = () => {
       participants: 342,
       duration: '1 day',
       difficulty: 'Easy',
-      points: 650, // Challenge of the month bonus points
+      points: 650,
       impact: 'Clean 1-2 hectares of park area',
       isSpecial: true
-    }
-  ];
-
-  const communityPosts = [
-    {
-      id: '1',
-      user: {
-        name: 'Jennifer L.',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-        level: 'Gold'
-      },
-      title: 'My Energy Saving Journey',
-      content: "I have managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine. I started by replacing all light bulbs with LED alternatives, setting up timers for electronics, and being more mindful about my energy consumption. The difference is noticeable both for the environment and my utility bills!",
-      image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&q=80',
-      postedAt: '3 days ago',
-      likes: 42,
-      comments: 12
-    },
-    {
-      id: '2',
-      user: {
-        name: 'Robert W.',
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        level: 'Silver'
-      },
-      title: 'Creating a Sustainable Home',
-      content: "I have transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same: use natural cleaning products, set up rainwater collection, compost food waste, and invest in energy-efficient appliances. Small changes really do add up to make a big difference!",
-      image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80',
-      postedAt: '1 week ago',
-      likes: 78,
-      comments: 24
-    },
-    {
-      id: '3',
-      user: {
-        name: 'Ashley T.',
-        avatar: 'https://randomuser.me/api/portraits/women/67.jpg',
-        level: 'Gold'
-      },
-      title: 'Park Cleanup Success',
-      content: 'Our community came together to clean up Jefferson Park last weekend. We collected over 50 bags of trash and recyclables. It was amazing to see so many people come together for this cause. We found everything from plastic bottles to abandoned furniture. Looking forward to organizing more cleanup events in the future!',
-      image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=800&q=80',
-      postedAt: '2 weeks ago',
-      likes: 105,
-      comments: 36
-    },
-    {
-      id: '4',
-      user: {
-        name: 'Mark D.',
-        avatar: 'https://randomuser.me/api/portraits/men/81.jpg',
-        level: 'Bronze'
-      },
-      title: 'My First Tree Planting Experience',
-      content: 'I participated in the tree planting challenge this month and it was such a rewarding experience! I planted an oak tree in my local community garden. The process was easier than I expected, and I learned so much about proper tree care. Already looking forward to watching it grow over the coming years.',
-      image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
-      postedAt: '3 weeks ago',
-      likes: 67,
-      comments: 18
     }
   ];
 
@@ -263,163 +204,29 @@ const ChallengesPage = () => {
       <Navbar />
       <div className="pt-28 pb-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-2 text-center">Environmental Hub</h1>
+          <h1 className="text-4xl font-bold mb-2 text-center">Environmental Challenges</h1>
           <p className="text-xl text-gray-600 mb-8 text-center max-w-2xl mx-auto">
-            Join challenges and connect with our community to make a bigger impact together
+            Join challenges to make a bigger impact and earn points for your contributions
           </p>
 
-          <div className="flex justify-center mb-8">
-            <div className="bg-white rounded-full p-1 shadow-md">
-              <div className="flex space-x-1">
-                <button
-                  className={`px-6 py-2 rounded-full text-center transition-all ${
-                    activeTab === 'challenges' 
-                      ? 'bg-green-500 text-white' 
-                      : 'hover:bg-green-100'
-                  }`}
-                  onClick={() => setActiveTab('challenges')}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <Leaf className="w-4 h-4" />
-                    Challenges
-                  </span>
-                </button>
-                <button
-                  className={`px-6 py-2 rounded-full text-center transition-all ${
-                    activeTab === 'community' 
-                      ? 'bg-green-500 text-white' 
-                      : 'hover:bg-green-100'
-                  }`}
-                  onClick={() => setActiveTab('community')}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Community
-                  </span>
-                </button>
-              </div>
+          {/* Challenge of the Month Section */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
+              <Leaf className="w-6 h-6 text-yellow-500" />
+              Challenge of the Month - Bonus Points!
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {challengeOfTheMonth.map(renderChallengeCard)}
             </div>
           </div>
 
-          {activeTab === 'challenges' && (
-            <div>
-              {/* Challenge of the Month Section */}
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold mb-6 text-center">Challenge of the Month - Bonus Points!</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {challengeOfTheMonth.map(renderChallengeCard)}
-                </div>
-              </div>
-
-              {/* Regular Challenges Section */}
-              <div>
-                <h2 className="text-2xl font-bold mb-6 text-center">Regular Challenges</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {challenges.map(renderChallengeCard)}
-                </div>
-              </div>
+          {/* Regular Challenges Section */}
+          <div>
+            <h2 className="text-2xl font-bold mb-6 text-center">Regular Challenges</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {challenges.map(renderChallengeCard)}
             </div>
-          )}
-
-          {activeTab === 'community' && (
-            <div className="mb-10">
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h3 className="text-xl font-bold mb-6">Share Your Story</h3>
-                <div className="mb-4">
-                  <input 
-                    type="text"
-                    placeholder="Give your story a title"
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-                  />
-                  <textarea
-                    placeholder="Share your eco-friendly journey with the community..."
-                    className="w-full p-3 border border-gray-300 rounded-lg h-32 mb-4"
-                  ></textarea>
-                  <div className="flex items-center justify-between">
-                    <Button variant="outline" className="flex items-center gap-1">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                      Add Image
-                    </Button>
-                    <Button className="bg-green-500 hover:bg-green-600">
-                      Post Your Story
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                {communityPosts.map((post) => (
-                  <motion.div 
-                    key={post.id} 
-                    className="bg-white rounded-xl shadow-lg overflow-hidden"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={post.user.avatar} 
-                            alt={post.user.name} 
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="font-semibold">{post.user.name}</p>
-                              <span className={`px-2 py-0.5 text-xs rounded-full ${
-                                post.user.level === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
-                                post.user.level === 'Silver' ? 'bg-gray-100 text-gray-800' :
-                                'bg-orange-100 text-orange-800'
-                              }`}>
-                                {post.user.level}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-500">Posted {post.postedAt}</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-xl font-bold mb-3">{post.title}</h3>
-                      <p className="text-gray-600 mb-4">{post.content}</p>
-                      
-                      {post.image && (
-                        <div className="mb-4 rounded-lg overflow-hidden">
-                          <img 
-                            src={post.image} 
-                            alt={post.title} 
-                            className="w-full h-64 object-cover"
-                          />
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                            <span>{post.likes}</span>
-                          </button>
-                          <button className="flex items-center gap-1 text-gray-500 hover:text-green-600">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                            </svg>
-                            <span>{post.comments}</span>
-                          </button>
-                        </div>
-                        <Button size="sm" variant="outline" className="text-green-600 border-green-500 hover:bg-green-50">
-                          Comment
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
       <Footer />
