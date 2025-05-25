@@ -120,7 +120,7 @@ const About = () => {
               viewport={{ once: true }}
             >
               <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md hover:shadow-xl transition-shadow">
-                <div className="text-green-500 text-5xl font-bold mb-4">5K+</div>
+                <div className="text-green-500 text-5xl font-bold mb-4">12K+</div>
                 <h3 className="text-xl font-semibold mb-2">Active Users</h3>
                 <p className="text-gray-600">Building sustainable habits around the world</p>
               </motion.div>
@@ -200,7 +200,7 @@ const About = () => {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button className="bg-white text-green-700 hover:bg-green-100 hover:scale-105 transition-transform">Get Started</Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white/10 hover:scale-105 transition-transform">Learn More</Button>
+                <Button variant="outline" className="border-2 border-white text-white bg-white/10 hover:bg-white hover:text-green-700 hover:scale-105 transition-all">Learn More</Button>
               </div>
             </motion.div>
           </div>

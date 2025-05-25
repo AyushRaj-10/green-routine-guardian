@@ -15,7 +15,7 @@ const CalculatorPage = () => {
             Measure your environmental footprint and track the positive impact of your daily habits
           </p>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-12">
             <Calculator />
             <WaterUsageForm />
           </div>
