@@ -1,4 +1,3 @@
-
 import { User } from "lucide-react";
 
 // Create consistent founder information to use across the site
@@ -6,7 +5,7 @@ export const founderData = [
   {
     name: "Ayush Raj",
     role: "Co-founder & CEO",
-    image: "/lovable-uploads/672b81a3-7d90-4054-99bb-fe22a1de44ac.png",
+    image: "/lovable-uploads/3e706835-5bd9-494e-9b1b-92bd01778ca1.png",
     bio: "Ayush is an 18-year-old Computer Science student at Dayananda Sagar College of Engineering. He founded GreenRoutine as a college project to make sustainable living accessible and engaging for everyone.",
     gender: "male"
   },
