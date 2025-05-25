@@ -61,7 +61,7 @@ const Index = () => {
       id: 1, 
       title: 'Plant a Tree',
       description: 'Plant a tree in your community and share a photo of your contribution.',
-      points: 500,  // Increased points
+      points: 750,  // Increased points
       image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
       icon: <TreeDeciduous size={24} className="text-green-600" />,
       difficulty: 'Medium',
@@ -71,7 +71,7 @@ const Index = () => {
       id: 2, 
       title: 'Clean a Park',
       description: 'Spend an hour cleaning a local park or beach with friends or family.',
-      points: 450,  // Increased points
+      points: 650,  // Increased points
       image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80',
       icon: <ParkingCircle size={24} className="text-green-600" />,
       difficulty: 'Easy',
@@ -81,7 +81,7 @@ const Index = () => {
       id: 3, 
       title: 'Help at a Local Shelter',
       description: 'Volunteer at a local animal shelter or old age home for a day.',
-      points: 600,  // Increased points
+      points: 900,  // Increased points
       image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800&q=80',
       icon: <HandHeart size={24} className="text-green-600" />,
       difficulty: 'Hard',
@@ -168,7 +168,7 @@ const Index = () => {
       <Reminders />
       <Challenges />
       
-      {/* Story & Founders Preview Section */}
+      {/* Story & Community Preview Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -190,7 +190,7 @@ const Index = () => {
                   <Link to="/story">Read Our Story</Link>
                 </Button>
                 <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-50" asChild>
-                  <Link to="/founders">Meet the Founders</Link>
+                  <Link to="/community">Community Stories</Link>
                 </Button>
               </div>
             </motion.div>
@@ -218,7 +218,7 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Challenge of the Month</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join our monthly eco-challenges and earn points while making a positive impact on the environment
+            Join our special monthly eco-challenges and earn bonus points while making a positive impact on the environment
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -237,8 +237,11 @@ const Index = () => {
                     alt={challenge.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 right-4 bg-white/90 p-1 px-3 rounded-full text-sm font-medium">
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-1 px-3 rounded-full text-sm font-bold">
                     {challenge.points} points
+                  </div>
+                  <div className="absolute top-4 left-4 bg-green-500 text-white p-1 px-3 rounded-full text-xs font-medium">
+                    Special Event
                   </div>
                 </div>
                 <div className="p-6">
@@ -315,7 +318,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-2">My Energy Saving Journey</h3>
                 <p className="text-gray-600 mb-4">
-                  I've managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine...
+                  I have managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine...
                 </p>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
@@ -368,7 +371,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Creating a Sustainable Home</h3>
                 <p className="text-gray-600 mb-4">
-                  I've transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same...
+                  I have transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same...
                 </p>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
@@ -447,8 +450,8 @@ const Index = () => {
           </div>
 
           <div className="flex justify-center">
-            <Button className="bg-green-600 hover:bg-green-700">
-              Share Your Story
+            <Button className="bg-green-600 hover:bg-green-700" asChild>
+              <Link to="/community">Share Your Story</Link>
             </Button>
           </div>
         </div>

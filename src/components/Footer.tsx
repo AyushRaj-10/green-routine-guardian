@@ -52,7 +52,7 @@ const Footer = () => {
                 <Link to="/story" className="text-green-100 hover:text-white transition-colors">Our Story</Link>
               </li>
               <li>
-                <Link to="/founders" className="text-green-100 hover:text-white transition-colors">Founders</Link>
+                <Link to="/community" className="text-green-100 hover:text-white transition-colors">Community</Link>
               </li>
               <li>
                 <Link to="/calculator" className="text-green-100 hover:text-white transition-colors">Calculator</Link>
@@ -102,7 +102,7 @@ const Footer = () => {
           <div className="mt-4 flex flex-wrap justify-center gap-4">
             <Link to="/about" className="text-green-100 hover:text-white text-sm transition-colors">About Us</Link>
             <Link to="/story" className="text-green-100 hover:text-white text-sm transition-colors">Our Story</Link>
-            <Link to="/founders" className="text-green-100 hover:text-white text-sm transition-colors">Founders</Link>
+            <Link to="/community" className="text-green-100 hover:text-white text-sm transition-colors">Community</Link>
             <Link to="/faq" className="text-green-100 hover:text-white text-sm transition-colors">FAQ</Link>
             <a href="#" className="text-green-100 hover:text-white text-sm transition-colors">Privacy Policy</a>
             <a href="#" className="text-green-100 hover:text-white text-sm transition-colors">Terms of Service</a>

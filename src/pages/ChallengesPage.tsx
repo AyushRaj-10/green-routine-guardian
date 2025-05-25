@@ -1,4 +1,3 @@
-
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ const ChallengesPage = () => {
   const [joinedChallenges, setJoinedChallenges] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'challenges' | 'community'>('challenges');
 
+  // Regular challenges with normal points
   const challenges = [
     {
       id: '1',
@@ -19,7 +19,7 @@ const ChallengesPage = () => {
       participants: 1240,
       duration: '7 days',
       difficulty: 'Medium',
-      points: 450, // Increased points
+      points: 300, // Normal challenge points
       impact: 'Prevent ~5kg of plastic waste'
     },
     {
@@ -30,7 +30,7 @@ const ChallengesPage = () => {
       participants: 3450,
       duration: '30 days',
       difficulty: 'Easy',
-      points: 400, // Increased points
+      points: 250, // Normal challenge points
       impact: 'Save up to 1500 liters of water'
     },
     {
@@ -41,7 +41,7 @@ const ChallengesPage = () => {
       participants: 890,
       duration: '30 days',
       difficulty: 'Hard',
-      points: 750, // Increased points
+      points: 500, // Normal challenge points
       impact: 'Reduce ~20kg of landfill waste'
     },
     {
@@ -52,30 +52,70 @@ const ChallengesPage = () => {
       participants: 2120,
       duration: '14 days',
       difficulty: 'Medium',
-      points: 500, // Increased points
+      points: 350, // Normal challenge points
       impact: 'Reduce ~75kg CO2 emissions'
     },
     {
       id: '5',
+      title: 'Eco-Friendly Transportation Week',
+      description: 'Use only eco-friendly transportation methods for one week',
+      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
+      participants: 756,
+      duration: '7 days',
+      difficulty: 'Medium',
+      points: 275, // Normal challenge points
+      impact: 'Reduce ~25kg CO2 emissions'
+    },
+    {
+      id: '6',
+      title: 'Energy Efficient Home',
+      description: 'Reduce your home energy consumption by 20% in one month',
+      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=800&q=80',
+      participants: 432,
+      duration: '30 days',
+      difficulty: 'Hard',
+      points: 450, // Normal challenge points
+      impact: 'Save ~200kWh of energy'
+    }
+  ];
+
+  // Special Challenge of the Month with higher points
+  const challengeOfTheMonth = [
+    {
+      id: 'cotm-1',
       title: 'Plant a Tree',
       description: 'Plant a tree in your community and share a photo of your contribution',
       image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
       participants: 287,
       duration: '1 day',
       difficulty: 'Medium',
-      points: 500, // Increased points
-      impact: 'Absorb ~20kg CO2 per year'
+      points: 750, // Challenge of the month bonus points
+      impact: 'Absorb ~20kg CO2 per year',
+      isSpecial: true
     },
     {
-      id: '6',
+      id: 'cotm-2',
       title: 'Help at a Local Shelter',
       description: 'Volunteer at a local animal shelter or old age home for a day',
       image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=800&q=80',
       participants: 156,
       duration: '1 day',
       difficulty: 'Hard',
-      points: 600, // Increased points
-      impact: 'Improve community well-being'
+      points: 900, // Challenge of the month bonus points
+      impact: 'Improve community well-being',
+      isSpecial: true
+    },
+    {
+      id: 'cotm-3',
+      title: 'Community Park Cleanup',
+      description: 'Organize or join a community cleanup event in your local park',
+      image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80',
+      participants: 342,
+      duration: '1 day',
+      difficulty: 'Easy',
+      points: 650, // Challenge of the month bonus points
+      impact: 'Clean 1-2 hectares of park area',
+      isSpecial: true
     }
   ];
 
@@ -88,7 +128,7 @@ const ChallengesPage = () => {
         level: 'Gold'
       },
       title: 'My Energy Saving Journey',
-      content: "I've managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine. I started by replacing all light bulbs with LED alternatives, setting up timers for electronics, and being more mindful about my energy consumption. The difference is noticeable both for the environment and my utility bills!",
+      content: "I have managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine. I started by replacing all light bulbs with LED alternatives, setting up timers for electronics, and being more mindful about my energy consumption. The difference is noticeable both for the environment and my utility bills!",
       image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&q=80',
       postedAt: '3 days ago',
       likes: 42,
@@ -102,7 +142,7 @@ const ChallengesPage = () => {
         level: 'Silver'
       },
       title: 'Creating a Sustainable Home',
-      content: "I've transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same: use natural cleaning products, set up rainwater collection, compost food waste, and invest in energy-efficient appliances. Small changes really do add up to make a big difference!",
+      content: "I have transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same: use natural cleaning products, set up rainwater collection, compost food waste, and invest in energy-efficient appliances. Small changes really do add up to make a big difference!",
       image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80',
       postedAt: '1 week ago',
       likes: 78,
@@ -145,6 +185,78 @@ const ChallengesPage = () => {
       setJoinedChallenges([...joinedChallenges, id]);
     }
   };
+
+  const renderChallengeCard = (challenge: any) => (
+    <motion.div 
+      key={challenge.id} 
+      className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="h-48 w-full overflow-hidden relative">
+        <img 
+          src={challenge.image} 
+          alt={challenge.title} 
+          className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+        />
+        {challenge.isSpecial && (
+          <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-1 px-3 rounded-full text-xs font-bold">
+            Challenge of the Month
+          </div>
+        )}
+        <div className={`absolute top-4 right-4 p-1 px-3 rounded-full text-sm font-medium ${
+          challenge.isSpecial 
+            ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
+            : 'bg-white/90 text-gray-800'
+        }`}>
+          {challenge.points} points
+        </div>
+      </div>
+      <div className="p-6 flex-1 flex flex-col">
+        <h3 className="text-xl font-bold mb-2">{challenge.title}</h3>
+        <p className="text-gray-600 mb-4">{challenge.description}</p>
+        
+        <div className="grid grid-cols-2 gap-2 mb-6 mt-auto">
+          <div>
+            <p className="text-sm text-gray-500">Duration</p>
+            <p className="font-medium">{challenge.duration}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Difficulty</p>
+            <p className="font-medium">{challenge.difficulty}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Participants</p>
+            <p className="font-medium">{challenge.participants.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Impact</p>
+            <p className="font-medium text-green-600 text-xs">{challenge.impact}</p>
+          </div>
+        </div>
+        
+        <Button 
+          className={joinedChallenges.includes(challenge.id) ? 
+            "bg-green-100 text-green-800 hover:bg-green-200 border border-green-500" : 
+            challenge.isSpecial 
+              ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+              : "bg-green-500 hover:bg-green-600 text-white"
+          }
+          onClick={() => toggleJoinChallenge(challenge.id)}
+        >
+          {joinedChallenges.includes(challenge.id) ? (
+            <>
+              <Check className="w-4 h-4 mr-2" />
+              Joined
+            </>
+          ) : (
+            'Join Challenge'
+          )}
+        </Button>
+      </div>
+    </motion.div>
+  );
 
   return (
     <div className="min-h-screen bg-green-50">
@@ -190,64 +302,22 @@ const ChallengesPage = () => {
           </div>
 
           {activeTab === 'challenges' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {challenges.map((challenge) => (
-                <motion.div 
-                  key={challenge.id} 
-                  className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className="h-48 w-full overflow-hidden">
-                    <img 
-                      src={challenge.image} 
-                      alt={challenge.title} 
-                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-xl font-bold mb-2">{challenge.title}</h3>
-                    <p className="text-gray-600 mb-4">{challenge.description}</p>
-                    
-                    <div className="grid grid-cols-2 gap-2 mb-6 mt-auto">
-                      <div>
-                        <p className="text-sm text-gray-500">Duration</p>
-                        <p className="font-medium">{challenge.duration}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Difficulty</p>
-                        <p className="font-medium">{challenge.difficulty}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Participants</p>
-                        <p className="font-medium">{challenge.participants.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Points</p>
-                        <p className="font-medium text-green-600">{challenge.points}</p>
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      className={joinedChallenges.includes(challenge.id) ? 
-                        "bg-green-100 text-green-800 hover:bg-green-200 border border-green-500" : 
-                        "bg-green-500 hover:bg-green-600 text-white"
-                      }
-                      onClick={() => toggleJoinChallenge(challenge.id)}
-                    >
-                      {joinedChallenges.includes(challenge.id) ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          Joined
-                        </>
-                      ) : (
-                        'Join Challenge'
-                      )}
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
+            <div>
+              {/* Challenge of the Month Section */}
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold mb-6 text-center">Challenge of the Month - Bonus Points!</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {challengeOfTheMonth.map(renderChallengeCard)}
+                </div>
+              </div>
+
+              {/* Regular Challenges Section */}
+              <div>
+                <h2 className="text-2xl font-bold mb-6 text-center">Regular Challenges</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {challenges.map(renderChallengeCard)}
+                </div>
+              </div>
             </div>
           )}
 

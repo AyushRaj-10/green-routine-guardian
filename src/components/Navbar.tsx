@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -90,10 +91,10 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavigationMenuLink asChild>
-                        <Link to="/founders" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                          <div className="text-sm font-medium">Founders</div>
+                        <Link to="/community" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium">Community</div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Meet the team behind GreenRoutine
+                            Share stories and connect with eco-warriors
                           </p>
                         </Link>
                       </NavigationMenuLink>
@@ -209,7 +210,7 @@ const Navbar = () => {
                 <Link to="/story" className="block py-2 text-green-800 hover:text-green-600">Our Story</Link>
               </li>
               <li>
-                <Link to="/founders" className="block py-2 text-green-800 hover:text-green-600">Founders</Link>
+                <Link to="/community" className="block py-2 text-green-800 hover:text-green-600">Community</Link>
               </li>
               <li>
                 <Link to="/reminders" className="block py-2 text-green-800 hover:text-green-600">Reminders</Link>
