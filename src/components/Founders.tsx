@@ -6,8 +6,7 @@ export const founderData = [
   {
     name: "Ayush Raj",
     role: "Co-founder & CEO",
-    import AyushImg from './public/Ayush.png.jpeg';
-    <img src={AyushImg} alt="Ayush" />,
+    image: "/lovable-uploads/672b81a3-7d90-4054-99bb-fe22a1de44ac.png",
     bio: "Ayush is an 18-year-old Computer Science student at Dayananda Sagar College of Engineering. He founded GreenRoutine as a college project to make sustainable living accessible and engaging for everyone.",
     gender: "male"
   },
@@ -45,7 +44,7 @@ export const Founders = () => {
                 <img 
                   src={founder.image} 
                   alt={founder.name}
-                  className="w-full h-full object-cover aspect-square"
+                  className="w-full h-full object-cover object-top aspect-square"
                 />
               ) : (
                 <div className="w-full h-full bg-green-100 flex items-center justify-center aspect-square">
