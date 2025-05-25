@@ -6,7 +6,7 @@ export const founderData = [
   {
     name: "Ayush Raj",
     role: "Co-founder & CEO",
-    import AyushImg from './assets/Ayush.png.jpeg';
+    import AyushImg from './public/Ayush.png.jpeg';
     <img src={AyushImg} alt="Ayush" />,
     bio: "Ayush is an 18-year-old Computer Science student at Dayananda Sagar College of Engineering. He founded GreenRoutine as a college project to make sustainable living accessible and engaging for everyone.",
     gender: "male"
