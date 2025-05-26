@@ -1,4 +1,3 @@
-
 import { User } from "lucide-react";
 
 // Create consistent founder information to use across the site
@@ -13,7 +12,7 @@ export const founderData = [
   {
     name: "Arpita Pai",
     role: "Co-founder & CTO",
-    image: "/lovable-uploads/678e34c1-ffbe-4a14-ac03-e3aa8bcc0855.png",
+    image: "/lovable-uploads/c7876a29-2cdb-4302-8a0a-34ba7a6edd6e.png",
     bio: "Arpita is an 18-year-old Computer Science student who brings technical expertise to GreenRoutine. Her vision drives the platform's interactive features and seamless user experience.",
     gender: "female"
   },
