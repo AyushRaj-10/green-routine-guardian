@@ -1,3 +1,4 @@
+
 import { User } from "lucide-react";
 
 // Create consistent founder information to use across the site
@@ -12,14 +13,14 @@ export const founderData = [
   {
     name: "Arpita Pai",
     role: "Co-founder & CTO",
-    image: "https://randomuser.me/api/portraits/women/33.jpg",
+    image: "/lovable-uploads/678e34c1-ffbe-4a14-ac03-e3aa8bcc0855.png",
     bio: "Arpita is an 18-year-old Computer Science student who brings technical expertise to GreenRoutine. Her vision drives the platform's interactive features and seamless user experience.",
     gender: "female"
   },
   {
     name: "Astuti Singh",
     role: "Co-founder & COO",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    image: "/lovable-uploads/8f11867a-66d1-4789-a318-e582a52aaa8a.png",
     bio: "Astuti is an 18-year-old Computer Science student who oversees operations for GreenRoutine. Her passion for environmental science informs our impact metrics and sustainability goals.",
     gender: "female"
   },
