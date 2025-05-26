@@ -120,13 +120,13 @@ const About = () => {
               viewport={{ once: true }}
             >
               <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md hover:shadow-xl transition-shadow">
-                <div className="text-green-500 text-5xl font-bold mb-4">12K+</div>
+                <div className="text-green-500 text-5xl font-bold mb-4">1,248</div>
                 <h3 className="text-xl font-semibold mb-2">Active Users</h3>
                 <p className="text-gray-600">Building sustainable habits around the world</p>
               </motion.div>
               
               <motion.div variants={itemVariants} className="bg-white rounded-lg p-8 shadow-md hover:shadow-xl transition-shadow">
-                <div className="text-green-500 text-5xl font-bold mb-4">10K+</div>
+                <div className="text-green-500 text-5xl font-bold mb-4">3,540</div>
                 <h3 className="text-xl font-semibold mb-2">Trees Planted</h3>
                 <p className="text-gray-600">Through our community challenges and initiatives</p>
               </motion.div>
