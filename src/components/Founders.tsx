@@ -1,3 +1,4 @@
+
 import { User } from "lucide-react";
 
 // Create consistent founder information to use across the site
@@ -26,7 +27,7 @@ export const founderData = [
   {
     name: "Arti Pikhan",
     role: "Co-founder & Design Lead",
-    image: "https://randomuser.me/api/portraits/women/68.jpg",
+    image: "/lovable-uploads/f6e9071b-c862-4ead-8885-26a7d61cf7ac.png",
     bio: "Arti is an 18-year-old Computer Science student whose creativity shapes the visual identity and user interface of GreenRoutine. She is passionate about making sustainability attractive.",
     gender: "female"
   }
