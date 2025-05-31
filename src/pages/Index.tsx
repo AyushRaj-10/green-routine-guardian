@@ -5,6 +5,10 @@ import LoadingScreen from '@/components/LoadingScreen';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
+import Calculator from '@/components/Calculator';
+import Challenges from '@/components/Challenges';
+import Reminders from '@/components/Reminders';
+import FAQ from '@/components/FAQ';
 import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
@@ -94,6 +98,10 @@ const Index = () => {
       <main>
         <Hero onReadMore={handleReadMore} />
         <Features />
+        <Calculator />
+        <Challenges />
+        <Reminders />
+        <FAQ />
         <Testimonials />
       </main>
       <Footer />
