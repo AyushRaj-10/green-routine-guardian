@@ -1,121 +1,137 @@
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import GrowingTree from './TreeGrowthAnimation';
+import TreeGrowthAnimation from './TreeGrowthAnimation';
 
-const Hero = () => {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const quoteRef = useRef<HTMLDivElement>(null);
+gsap.registerPlugin(ScrollTrigger);
+
+interface HeroProps {
+  onReadMore?: () => void;
+}
+
+const Hero = ({ onReadMore }: HeroProps) => {
+  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    // Animate hero content
     const tl = gsap.timeline();
-
-    tl.fromTo(
-      titleRef.current,
+    
+    tl.fromTo('.hero-title', 
       { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
-      0.5
-    );
-
-    tl.fromTo(
-      subtitleRef.current,
+      { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }
+    )
+    .fromTo('.hero-subtitle', 
       { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
-      0.8
-    );
-
-    tl.fromTo(
-      ctaRef.current,
+      { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
+      '-=0.5'
+    )
+    .fromTo('.hero-buttons', 
       { y: 20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
-      1.1
+      { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' },
+      '-=0.3'
     );
 
-    tl.fromTo(
-      quoteRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 1, ease: 'power3.out' },
-      1.4
-    );
+    // Parallax effect for the hero section
+    gsap.set(hero, { perspective: 1000 });
+    
+    ScrollTrigger.create({
+      trigger: hero,
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1,
+      onUpdate: (self) => {
+        const y = self.progress * 100;
+        gsap.to('.hero-content', { y: y, ease: 'none', duration: 0.3 });
+      }
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, []);
 
-  // Inspirational quotes
-  const quotes = [
-    "\"The greatest threat to our planet is the belief that someone else will save it.\" - Robert Swan",
-    "\"We do not inherit the earth from our ancestors, we borrow it from our children.\" - Native American Proverb",
-    "\"The Earth is what we all have in common.\" - Wendell Berry",
-    "\"Nature does not hurry, yet everything is accomplished.\" - Lao Tzu",
-    "\"We won't have a society if we destroy the environment.\" - Margaret Mead"
-  ];
-  
-  // Select random quote
-  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Static Tree Background instead of 3D animation */}
+    <section ref={heroRef} className="hero relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-blue-900">
+      {/* Background Animation */}
       <div className="absolute inset-0 z-0">
-        <GrowingTree />
-      </div>
-      
-      {/* Content */}
-      <div className="container mx-auto px-4 z-10 text-center">
-        <h1 
-          ref={titleRef}
-          className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg"
-        >
-          Create <span className="text-green-400">Sustainable</span> Habits
-        </h1>
-        <p 
-          ref={subtitleRef}
-          className="text-xl md:text-2xl mb-10 max-w-2xl mx-auto text-white drop-shadow-md"
-        >
-          Get reminders, track your impact, and join challenges to build a greener future.
-        </p>
-        <div ref={ctaRef} className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button className="bg-green-600 hover:bg-green-700 text-white text-lg py-6 px-8 shadow-lg hover:scale-105 transition-transform font-semibold" asChild>
-            <Link to="/dashboard">Get Started</Link>
-          </Button>
-          <Button variant="outline" className="border-white text-white border-2 bg-black/30 hover:bg-white/30 text-lg py-6 px-8 shadow-md hover:scale-105 transition-transform font-semibold" asChild>
-            <Link to="/about">Learn More</Link>
-          </Button>
-        </div>
-        
-        {/* Feature Links */}
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
-            <Link to="/reminders">Reminders</Link>
-          </Button>
-          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
-            <Link to="/challenges">Challenges</Link>
-          </Button>
-          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
-            <Link to="/calculator">Calculator</Link>
-          </Button>
-          <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-white hover:scale-105 transition-transform" asChild>
-            <Link to="/faq">FAQ</Link>
-          </Button>
-        </div>
-        
-        {/* Inspirational Quote */}
-        <div 
-          ref={quoteRef}
-          className="mt-16 max-w-2xl mx-auto bg-black/30 backdrop-blur-sm p-6 rounded-lg border border-white/10"
-        >
-          <p className="italic text-white/90 text-lg">{randomQuote}</p>
-        </div>
+        <TreeGrowthAnimation />
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-        <span className="text-white text-sm mb-2">Scroll Down</span>
-        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
-        </div>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/40 z-10"></div>
+
+      {/* Content */}
+      <div className="hero-content relative z-20 container mx-auto px-4 text-center text-white">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <h1 className="hero-title text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            Build Your
+            <span className="block text-green-400">Green Routine</span>
+          </h1>
+          
+          <p className="hero-subtitle text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
+            Transform your daily habits into powerful environmental actions. 
+            Track your impact, join challenges, and be part of the solution.
+          </p>
+          
+          <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold transition-all hover:scale-105">
+              Start Your Journey
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={onReadMore}
+              className="border-2 border-white text-white hover:bg-white hover:text-green-900 px-8 py-4 text-lg font-semibold transition-all hover:scale-105"
+            >
+              Read More
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 z-10">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-green-400 rounded-full opacity-20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -100],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
       </div>
     </section>
   );

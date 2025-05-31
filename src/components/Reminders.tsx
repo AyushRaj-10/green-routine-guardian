@@ -7,6 +7,7 @@ const Reminders = () => {
   const [reminderType, setReminderType] = useState<string>('water');
   const [time, setTime] = useState<string>('08:00');
   const [frequency, setFrequency] = useState<string>('daily');
+  const [customMessage, setCustomMessage] = useState<string>('');
   const [savedReminders, setSavedReminders] = useState<any[]>([
     {
       id: 1,
@@ -14,6 +15,7 @@ const Reminders = () => {
       time: '07:45',
       message: 'Remember to turn off the tap while brushing teeth',
       frequency: 'daily',
+      createdAt: new Date('2024-01-01'),
     },
     {
       id: 2,
@@ -21,10 +23,15 @@ const Reminders = () => {
       time: '09:45',
       message: 'Don\'t forget to turn off lights before leaving',
       frequency: 'weekdays',
+      createdAt: new Date('2024-01-02'),
     },
   ]);
 
   const getReminderMessage = (type: string) => {
+    if (customMessage.trim()) {
+      return customMessage.trim();
+    }
+    
     switch (type) {
       case 'water':
         return 'Remember to turn off the tap while brushing teeth';
@@ -44,19 +51,26 @@ const Reminders = () => {
       time,
       message: getReminderMessage(reminderType),
       frequency,
+      createdAt: new Date(),
     };
     
-    setSavedReminders([...savedReminders, newReminder]);
+    setSavedReminders([newReminder, ...savedReminders]);
     
     // Reset form
     setReminderType('water');
     setTime('08:00');
     setFrequency('daily');
+    setCustomMessage('');
   };
 
   const handleDeleteReminder = (id: number) => {
     setSavedReminders(savedReminders.filter(reminder => reminder.id !== id));
   };
+
+  // Sort reminders by creation date (latest first)
+  const sortedReminders = [...savedReminders].sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   return (
     <section id="reminders" className="section bg-green-50">
@@ -122,6 +136,21 @@ const Reminders = () => {
                   </button>
                 </div>
               </div>
+
+              <div>
+                <label htmlFor="customMessage" className="block text-gray-700 mb-2">Custom Reminder Message (Optional)</label>
+                <textarea 
+                  id="customMessage"
+                  value={customMessage} 
+                  onChange={(e) => setCustomMessage(e.target.value)} 
+                  className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="Write your own reminder message..."
+                  rows={3}
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Leave empty to use default message for selected type
+                </p>
+              </div>
               
               <div>
                 <label htmlFor="time" className="block text-gray-700 mb-2">Reminder Time</label>
@@ -163,9 +192,9 @@ const Reminders = () => {
           >
             <h3 className="text-2xl font-bold mb-6">Your Reminders</h3>
             
-            {savedReminders.length > 0 ? (
+            {sortedReminders.length > 0 ? (
               <div className="space-y-4">
-                {savedReminders.map((reminder) => (
+                {sortedReminders.map((reminder) => (
                   <div 
                     key={reminder.id} 
                     className="p-4 rounded-lg border border-gray-200 flex items-center justify-between"

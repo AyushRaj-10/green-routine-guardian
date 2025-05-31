@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -74,6 +73,81 @@ const Calculator = () => {
     return { level: 'Very High', color: 'bg-red-500', percentage: 100 };
   };
 
+  const getPersonalizedRecommendations = () => {
+    const recommendations = [];
+    
+    if (results?.electricityEmissions > 50) {
+      recommendations.push("Try switching to LED bulbs");
+    }
+    if (results?.transportEmissions > 50) {
+      recommendations.push("Use the metro twice a week");
+    }
+    if (results?.totalEmissions > 100) {
+      recommendations.push("Go meatless 1 day a week");
+    }
+    
+    return recommendations;
+  };
+
+  const getSceneAnimation = () => {
+    if (!results) return null;
+    
+    const { totalEmissions } = results;
+    const isLowEmissions = totalEmissions < 100;
+    
+    return (
+      <div className={`relative h-64 rounded-xl overflow-hidden ${isLowEmissions ? 'bg-gradient-to-b from-blue-200 to-green-300' : 'bg-gradient-to-b from-gray-400 to-gray-600'}`}>
+        {/* Sun/Moon */}
+        <motion.div
+          className={`absolute top-4 right-4 w-16 h-16 rounded-full ${isLowEmissions ? 'bg-yellow-400' : 'bg-gray-300'}`}
+          animate={isLowEmissions ? { rotate: 360 } : { opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        />
+        
+        {/* Trees */}
+        <div className="absolute bottom-0 left-0 right-0">
+          {[1, 2, 3, 4, 5].map((tree) => (
+            <motion.div
+              key={tree}
+              className={`absolute bottom-0 ${isLowEmissions ? 'text-green-600' : 'text-gray-700'}`}
+              style={{ left: `${tree * 15}%` }}
+              initial={{ scaleY: 0, originY: 1 }}
+              animate={{ scaleY: isLowEmissions ? 1 : 0.3 }}
+              transition={{ delay: tree * 0.2, duration: 1 }}
+            >
+              <svg className="h-20 w-8" viewBox="0 0 24 48" fill="currentColor">
+                <rect x="10" y="30" width="4" height="18" className="fill-amber-800" />
+                <circle cx="12" cy="20" r="12" />
+              </svg>
+            </motion.div>
+          ))}
+        </div>
+        
+        {/* Smoke for high emissions */}
+        {!isLowEmissions && (
+          <motion.div
+            className="absolute top-16 left-1/2 transform -translate-x-1/2"
+            animate={{ y: [-10, -30, -10], opacity: [0.7, 0.3, 0.7] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <div className="text-gray-500 text-6xl">💨</div>
+          </motion.div>
+        )}
+        
+        {/* Birds for low emissions */}
+        {isLowEmissions && (
+          <motion.div
+            className="absolute top-8 left-1/4"
+            animate={{ x: [0, 100, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          >
+            <div className="text-2xl">🕊️</div>
+          </motion.div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <section id="calculator" className="section bg-green-50 py-20">
       <div className="container">
@@ -97,8 +171,9 @@ const Calculator = () => {
                     type="number" 
                     value={electricity}
                     onChange={(e) => setElectricity(Number(e.target.value))} 
-                    className="w-full px-6 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 text-lg"
+                    className="w-full px-6 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 text-lg overflow-hidden"
                     placeholder="e.g. 300"
+                    style={{ textOverflow: 'ellipsis' }}
                   />
                 </div>
                 
@@ -108,8 +183,9 @@ const Calculator = () => {
                     type="number" 
                     value={water}
                     onChange={(e) => setWater(Number(e.target.value))} 
-                    className="w-full px-6 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 text-lg"
+                    className="w-full px-6 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 text-lg overflow-hidden"
                     placeholder="e.g. 5000"
+                    style={{ textOverflow: 'ellipsis' }}
                   />
                 </div>
                 
@@ -119,8 +195,9 @@ const Calculator = () => {
                     type="number" 
                     value={distance}
                     onChange={(e) => setDistance(Number(e.target.value))} 
-                    className="w-full px-6 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 text-lg"
+                    className="w-full px-6 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 text-lg overflow-hidden"
                     placeholder="e.g. 20"
+                    style={{ textOverflow: 'ellipsis' }}
                   />
                 </div>
                 
@@ -151,7 +228,7 @@ const Calculator = () => {
                 <Button 
                   variant="outline" 
                   onClick={resetCalculator}
-                  className="border-white text-white hover:bg-white/10 py-3 px-8 text-lg"
+                  className="border-2 border-red-500 text-red-500 bg-white hover:bg-red-50 hover:border-red-600 hover:text-red-600 py-3 px-8 text-lg font-semibold"
                 >
                   Reset
                 </Button>
@@ -171,6 +248,12 @@ const Calculator = () => {
                   transition={{ duration: 0.5 }}
                   className="space-y-8"
                 >
+                  {/* Dynamic Scene Animation */}
+                  <div className="mb-8">
+                    <h4 className="text-xl font-semibold mb-4">Your Environmental Scene</h4>
+                    {getSceneAnimation()}
+                  </div>
+
                   {/* Impact Overview */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="bg-gray-50 p-8 rounded-xl">
@@ -180,7 +263,7 @@ const Calculator = () => {
                           {getImpactLevel(results.totalEmissions).level}
                         </span>
                       </div>
-                      <p className="text-4xl font-bold text-gray-800 mb-6">{formatNumber(results.totalEmissions)} kg</p>
+                      <p className="text-4xl font-bold text-gray-800 mb-6 break-words">{formatNumber(results.totalEmissions)} kg</p>
                       <Progress 
                         value={getImpactLevel(results.totalEmissions).percentage} 
                         className="h-3"
@@ -189,7 +272,7 @@ const Calculator = () => {
                     
                     <div className="bg-green-50 p-8 rounded-xl">
                       <p className="text-gray-500 mb-3 text-lg">Trees Needed to Offset</p>
-                      <p className="text-4xl font-bold text-green-600 mb-6">{formatNumber(results.treesNeeded)} trees</p>
+                      <p className="text-4xl font-bold text-green-600 mb-6 break-words">{formatNumber(results.treesNeeded)} trees</p>
                       <div className="flex items-center text-sm text-gray-600">
                         <span>🌳 Each tree absorbs ~25kg CO2/year</span>
                       </div>
@@ -265,28 +348,16 @@ const Calculator = () => {
                     </div>
                   </div>
 
-                  {/* Action Recommendations */}
+                  {/* Personalized Recommendations */}
                   <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-xl">
-                    <h4 className="text-xl font-semibold mb-6">💡 Recommendations to Reduce Your Impact</h4>
+                    <h4 className="text-xl font-semibold mb-6">💡 Personalized Recommendations</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {results.electricityEmissions > 50 && (
-                        <div className="flex items-start space-x-4">
-                          <span className="text-yellow-500 text-xl">⚡</span>
-                          <span className="text-sm">Switch to LED bulbs and unplug devices when not in use</span>
+                      {getPersonalizedRecommendations().map((recommendation, index) => (
+                        <div key={index} className="flex items-start space-x-4">
+                          <span className="text-green-500 text-xl">✅</span>
+                          <span className="text-sm font-medium">{recommendation}</span>
                         </div>
-                      )}
-                      {results.transportEmissions > 50 && (
-                        <div className="flex items-start space-x-4">
-                          <span className="text-blue-500 text-xl">🚲</span>
-                          <span className="text-sm">Consider cycling, walking, or public transport for short trips</span>
-                        </div>
-                      )}
-                      {results.waterEmissions > 20 && (
-                        <div className="flex items-start space-x-4">
-                          <span className="text-blue-400 text-xl">💧</span>
-                          <span className="text-sm">Take shorter showers and fix any water leaks</span>
-                        </div>
-                      )}
+                      ))}
                       <div className="flex items-start space-x-4">
                         <span className="text-green-500 text-xl">🌱</span>
                         <span className="text-sm">Join our challenges to make sustainable changes step by step</span>
