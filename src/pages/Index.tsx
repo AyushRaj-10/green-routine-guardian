@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from '@/components/LoadingScreen';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -13,6 +13,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLoadedBefore, setHasLoadedBefore] = useState<boolean>(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Check if user has seen loading screen before in this session
@@ -36,31 +37,25 @@ const Index = () => {
   useEffect(() => {
     // Save scroll position when user leaves the page
     const handleBeforeUnload = () => {
-      sessionStorage.setItem('homeScrollPosition', window.scrollY.toString());
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
-
-  // Reset scroll to top when navigating to other pages
-  useEffect(() => {
-    const handleNavigation = () => {
-      if (window.location.pathname !== '/') {
-        window.scrollTo(0, 0);
+      if (location.pathname === '/') {
+        sessionStorage.setItem('homeScrollPosition', window.scrollY.toString());
       }
     };
 
-    // Listen for route changes
-    window.addEventListener('popstate', handleNavigation);
+    const handleVisibilityChange = () => {
+      if (document.hidden && location.pathname === '/') {
+        sessionStorage.setItem('homeScrollPosition', window.scrollY.toString());
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     return () => {
-      window.removeEventListener('popstate', handleNavigation);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -84,6 +79,8 @@ const Index = () => {
   };
 
   const handleReadMore = () => {
+    // Save current scroll position before navigating
+    sessionStorage.setItem('homeScrollPosition', window.scrollY.toString());
     navigate('/community');
   };
 

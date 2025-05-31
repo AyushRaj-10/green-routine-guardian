@@ -57,7 +57,7 @@ const Hero = ({ onReadMore }: HeroProps) => {
   }, []);
 
   return (
-    <section ref={heroRef} className="hero relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-blue-900">
+    <section ref={heroRef} className="hero relative h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-blue-900">
       {/* Background Animation */}
       <div className="absolute inset-0 z-0">
         <TreeGrowthAnimation />
