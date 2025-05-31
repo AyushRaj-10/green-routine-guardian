@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from '@/components/LoadingScreen';
@@ -7,10 +6,13 @@ import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import Calculator from '@/components/Calculator';
 import WaterUsageForm from '@/components/WaterUsageForm';
+import ChallengeOfTheMonth from '@/components/ChallengeOfTheMonth';
 import Challenges from '@/components/Challenges';
+import CommunityPreview from '@/components/CommunityPreview';
 import Reminders from '@/components/Reminders';
 import FAQ from '@/components/FAQ';
 import Testimonials from '@/components/Testimonials';
+import AboutUsPreview from '@/components/AboutUsPreview';
 import { Story } from '@/components/Story';
 import Footer from '@/components/Footer';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
@@ -102,10 +104,13 @@ const Index = () => {
         <Features />
         <Calculator />
         <WaterUsageForm />
+        <ChallengeOfTheMonth />
         <Challenges />
+        <CommunityPreview />
         <Reminders />
         <FAQ />
         <Testimonials />
+        <AboutUsPreview />
         <section id="story" className="section bg-green-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
