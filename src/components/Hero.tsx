@@ -92,7 +92,7 @@ const Hero = ({ onReadMore }: HeroProps) => {
               variant="outline" 
               size="lg" 
               onClick={onReadMore}
-              className="border-2 border-white text-white hover:bg-white hover:text-green-900 px-8 py-4 text-lg font-semibold transition-all hover:scale-105"
+              className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-green-900 px-8 py-4 text-lg font-semibold transition-all hover:scale-105 shadow-lg"
             >
               Read More
             </Button>
