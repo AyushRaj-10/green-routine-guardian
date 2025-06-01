@@ -97,7 +97,7 @@ const Features = () => {
             <p className="text-gray-600">Liters of Water Conserved</p>
           </div>
           <div className="text-center p-6 rounded-lg bg-orange-50">
-            <div className="text-4xl font-bold text-orange-500 mb-2 counter">1248</div>
+            <div className="text-4xl font-bold text-orange-500 mb-2 counter">15000</div>
             <p className="text-gray-600">Active Community Members</p>
           </div>
         </div>

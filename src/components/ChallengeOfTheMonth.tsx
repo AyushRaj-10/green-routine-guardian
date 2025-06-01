@@ -9,7 +9,7 @@ const ChallengeOfTheMonth = () => {
     title: "Plant a Tree Challenge",
     description: "Join thousands in planting trees to combat climate change. Each tree planted helps absorb CO2 and creates a greener future for all.",
     image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80",
-    participants: 15692,
+    participants: 15000,
     daysLeft: 12,
     progress: 78,
     rewards: "750 points + Tree planting certificate",
@@ -18,21 +18,21 @@ const ChallengeOfTheMonth = () => {
   };
 
   const highlights = [
-    { icon: Users, label: "Participants", value: "15,692" },
+    { icon: Users, label: "Participants", value: "15,000" },
     { icon: Calendar, label: "Days Left", value: "12" },
     { icon: Target, label: "Completion", value: "78%" },
     { icon: Trophy, label: "Rewards", value: "750 pts" }
   ];
 
   return (
-    <section id="challenge-of-month" className="section bg-gradient-to-br from-green-800 to-emerald-900 text-white">
+    <section id="challenge-of-month" className="section bg-gradient-to-br from-green-50 to-emerald-100">
       <div className="container">
         <div className="text-center mb-12">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold mb-4 text-white"
+            className="text-3xl md:text-4xl font-bold mb-4 text-gray-800"
           >
             Challenge of the Month
           </motion.h2>
@@ -41,7 +41,7 @@ const ChallengeOfTheMonth = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-xl text-green-50 max-w-2xl mx-auto"
+            className="text-xl text-gray-600 max-w-2xl mx-auto"
           >
             Take on our featured monthly challenge and make a real impact with thousands of others
           </motion.p>
@@ -86,30 +86,30 @@ const ChallengeOfTheMonth = () => {
             className="space-y-6"
           >
             <div>
-              <h3 className="text-3xl font-bold mb-4 text-white">{currentChallenge.title}</h3>
-              <p className="text-lg text-green-50 mb-6">{currentChallenge.description}</p>
+              <h3 className="text-3xl font-bold mb-4 text-gray-800">{currentChallenge.title}</h3>
+              <p className="text-lg text-gray-600 mb-6">{currentChallenge.description}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               {highlights.map((highlight, index) => (
-                <div key={index} className="bg-white/15 backdrop-blur-sm rounded-lg p-4 text-center border border-white/20">
-                  <highlight.icon className="h-6 w-6 text-green-200 mx-auto mb-2" />
-                  <div className="text-xl font-bold text-white">{highlight.value}</div>
-                  <div className="text-sm text-green-100">{highlight.label}</div>
+                <div key={index} className="bg-white/90 backdrop-blur-sm rounded-lg p-4 text-center border border-gray-200 shadow-md">
+                  <highlight.icon className="h-6 w-6 text-green-600 mx-auto mb-2" />
+                  <div className="text-xl font-bold text-gray-800">{highlight.value}</div>
+                  <div className="text-sm text-gray-600">{highlight.label}</div>
                 </div>
               ))}
             </div>
 
-            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <h4 className="font-semibold mb-2 text-white">This Month's Reward</h4>
-              <p className="text-green-100">{currentChallenge.rewards}</p>
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-gray-200 shadow-md">
+              <h4 className="font-semibold mb-2 text-gray-800">This Month's Reward</h4>
+              <p className="text-gray-600">{currentChallenge.rewards}</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white border-0 flex-1" asChild>
                 <Link to="/challenges">Join Challenge</Link>
               </Button>
-              <Button size="lg" className="bg-white text-green-800 hover:bg-green-50 border-0 flex-1" asChild>
+              <Button size="lg" className="bg-gray-800 text-white hover:bg-gray-700 border-0 flex-1" asChild>
                 <Link to="/challenges">View All Challenges</Link>
               </Button>
             </div>
