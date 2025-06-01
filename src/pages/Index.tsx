@@ -5,15 +5,13 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import Calculator from '@/components/Calculator';
-import WaterUsageForm from '@/components/WaterUsageForm';
-import ChallengeOfTheMonth from '@/components/ChallengeOfTheMonth';
+import Reminders from '@/components/Reminders';
 import Challenges from '@/components/Challenges';
 import CommunityPreview from '@/components/CommunityPreview';
-import Reminders from '@/components/Reminders';
 import FAQ from '@/components/FAQ';
+import StoryGlimpse from '@/components/StoryGlimpse';
 import Testimonials from '@/components/Testimonials';
 import AboutUsPreview from '@/components/AboutUsPreview';
-import { Story } from '@/components/Story';
 import Footer from '@/components/Footer';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 
@@ -103,25 +101,13 @@ const Index = () => {
         <Hero onReadMore={handleReadMore} />
         <Features />
         <Calculator />
-        <WaterUsageForm />
-        <ChallengeOfTheMonth />
+        <Reminders />
         <Challenges />
         <CommunityPreview />
-        <Reminders />
         <FAQ />
+        <StoryGlimpse />
         <Testimonials />
         <AboutUsPreview />
-        <section id="story" className="section bg-green-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Journey</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                The story of GreenRoutine: From college project to sustainable impact
-              </p>
-            </div>
-            <Story />
-          </div>
-        </section>
       </main>
       <Footer />
     </div>

@@ -186,7 +186,7 @@ const Challenges = () => {
             </div>
             
             <div className="text-center mt-8">
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild className="border-2 border-green-600 text-green-700 hover:bg-green-600 hover:text-white font-semibold px-8 py-3">
                 <Link to="/challenges">View All Challenges</Link>
               </Button>
             </div>
