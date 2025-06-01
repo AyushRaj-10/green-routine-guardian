@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from '@/components/LoadingScreen';
@@ -15,6 +14,7 @@ import StoryGlimpse from '@/components/StoryGlimpse';
 import Testimonials from '@/components/Testimonials';
 import AboutUsPreview from '@/components/AboutUsPreview';
 import Footer from '@/components/Footer';
+import Sponsors from '@/components/Sponsors';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 
 const Index = () => {
@@ -111,6 +111,7 @@ const Index = () => {
         <StoryGlimpse />
         <Testimonials />
         <AboutUsPreview />
+        <Sponsors />
       </main>
       <Footer />
     </div>
