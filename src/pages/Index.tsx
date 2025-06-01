@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from '@/components/LoadingScreen';
@@ -6,6 +7,7 @@ import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import Calculator from '@/components/Calculator';
 import Reminders from '@/components/Reminders';
+import ChallengeOfTheMonth from '@/components/ChallengeOfTheMonth';
 import Challenges from '@/components/Challenges';
 import CommunityPreview from '@/components/CommunityPreview';
 import FAQ from '@/components/FAQ';
@@ -102,6 +104,7 @@ const Index = () => {
         <Features />
         <Calculator />
         <Reminders />
+        <ChallengeOfTheMonth />
         <Challenges />
         <CommunityPreview />
         <FAQ />
