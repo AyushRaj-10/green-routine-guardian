@@ -1,31 +1,42 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 const Reminders = () => {
+  const { user } = useAuth();
   const [reminderType, setReminderType] = useState<string>('water');
   const [time, setTime] = useState<string>('08:00');
   const [frequency, setFrequency] = useState<string>('daily');
   const [customMessage, setCustomMessage] = useState<string>('');
-  const [savedReminders, setSavedReminders] = useState<any[]>([
-    {
-      id: 1,
-      type: 'water',
-      time: '07:45',
-      message: 'Remember to turn off the tap while brushing teeth',
-      frequency: 'daily',
-      createdAt: new Date('2024-01-01'),
-    },
-    {
-      id: 2,
-      type: 'energy',
-      time: '09:45',
-      message: 'Don\'t forget to turn off lights before leaving',
-      frequency: 'weekdays',
-      createdAt: new Date('2024-01-02'),
-    },
-  ]);
+  const [savedReminders, setSavedReminders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchReminders();
+    }
+  }, [user]);
+
+  const fetchReminders = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('reminders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setSavedReminders(data || []);
+    } catch (error) {
+      console.error('Error fetching reminders:', error);
+    }
+  };
 
   const getReminderMessage = (type: string) => {
     if (customMessage.trim()) {
@@ -44,33 +55,95 @@ const Reminders = () => {
     }
   };
 
-  const handleSaveReminder = () => {
-    const newReminder = {
-      id: Date.now(),
-      type: reminderType,
-      time,
-      message: getReminderMessage(reminderType),
-      frequency,
-      createdAt: new Date(),
-    };
+  const handleSaveReminder = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to create reminders",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
     
-    setSavedReminders([newReminder, ...savedReminders]);
-    
-    // Reset form
-    setReminderType('water');
-    setTime('08:00');
-    setFrequency('daily');
-    setCustomMessage('');
+    try {
+      // Create reminder time for today at the specified time
+      const today = new Date();
+      const [hours, minutes] = time.split(':');
+      const reminderTime = new Date(today);
+      reminderTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      
+      // If the time has already passed today, set it for tomorrow
+      if (reminderTime <= new Date()) {
+        reminderTime.setDate(reminderTime.getDate() + 1);
+      }
+
+      const { error } = await supabase
+        .from('reminders')
+        .insert([
+          {
+            user_id: user.id,
+            title: getReminderMessage(reminderType),
+            description: `${reminderType} reminder - ${frequency}`,
+            reminder_time: reminderTime.toISOString()
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Reminder created!",
+        description: "Your eco-friendly reminder has been saved",
+      });
+      
+      // Reset form
+      setReminderType('water');
+      setTime('08:00');
+      setFrequency('daily');
+      setCustomMessage('');
+      
+      // Refresh reminders
+      fetchReminders();
+    } catch (error) {
+      console.error('Error creating reminder:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create reminder",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteReminder = (id: number) => {
-    setSavedReminders(savedReminders.filter(reminder => reminder.id !== id));
-  };
+  const handleDeleteReminder = async (id: string) => {
+    if (!user) return;
 
-  // Sort reminders by creation date (latest first)
-  const sortedReminders = [...savedReminders].sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+    try {
+      const { error } = await supabase
+        .from('reminders')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Reminder deleted",
+        description: "Your reminder has been removed"
+      });
+      
+      fetchReminders();
+    } catch (error) {
+      console.error('Error deleting reminder:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete reminder",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <section id="reminders" className="section bg-green-50">
@@ -79,6 +152,7 @@ const Reminders = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 fadeInUp">Set Eco Reminders</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto fadeInUp">
             Create customized reminders to help you develop sustainable habits.
+            {!user && " Please log in to save your reminders!"}
           </p>
         </div>
 
@@ -177,9 +251,19 @@ const Reminders = () => {
                 </select>
               </div>
               
-              <Button onClick={handleSaveReminder} className="w-full">
-                Save Reminder
+              <Button 
+                onClick={handleSaveReminder} 
+                className="w-full"
+                disabled={loading || !user}
+              >
+                {loading ? 'Saving...' : 'Save Reminder'}
               </Button>
+              
+              {!user && (
+                <p className="text-center text-sm text-red-600">
+                  Please <a href="/auth" className="underline">log in</a> to save reminders
+                </p>
+              )}
             </div>
           </motion.div>
           
@@ -190,69 +274,70 @@ const Reminders = () => {
             viewport={{ once: true }}
             className="bg-white rounded-2xl shadow-lg p-8"
           >
-            <h3 className="text-2xl font-bold mb-6">Your Reminders</h3>
+            <h3 className="text-2xl font-bold mb-6">
+              {user ? 'Your Reminders' : 'Sample Reminders'}
+            </h3>
             
-            {sortedReminders.length > 0 ? (
-              <div className="space-y-4">
-                {sortedReminders.map((reminder) => (
-                  <div 
-                    key={reminder.id} 
-                    className="p-4 rounded-lg border border-gray-200 flex items-center justify-between"
-                  >
-                    <div className="flex items-center">
-                      <div className={`p-3 rounded-full mr-4 ${
-                        reminder.type === 'water' ? 'bg-blue-100 text-blue-500' :
-                        reminder.type === 'energy' ? 'bg-yellow-100 text-yellow-500' :
-                        'bg-green-100 text-green-500'
-                      }`}>
-                        {reminder.type === 'water' && (
-                          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 2v6M12 22v-6M4.93 10.93l4.24 4.24M14.83 8.83l4.24 4.24M19.07 10.93l-4.24 4.24M9.17 8.83L4.93 13.07M22 12h-6M8 12H2"></path>
-                          </svg>
-                        )}
-                        {reminder.type === 'energy' && (
-                          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                          </svg>
-                        )}
-                        {reminder.type === 'waste' && (
-                          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                          </svg>
-                        )}
-                      </div>
+            {user ? (
+              savedReminders.length > 0 ? (
+                <div className="space-y-4">
+                  {savedReminders.map((reminder) => (
+                    <div 
+                      key={reminder.id} 
+                      className="p-4 rounded-lg border border-gray-200 flex items-center justify-between"
+                    >
                       <div>
-                        <p className="font-medium">{reminder.message}</p>
+                        <p className="font-medium">{reminder.title}</p>
                         <div className="flex text-sm text-gray-500 mt-1">
-                          <span className="mr-3">{reminder.time}</span>
-                          <span className="capitalize">{reminder.frequency}</span>
+                          <span className="mr-3">{new Date(reminder.reminder_time).toLocaleTimeString()}</span>
+                          <span>{new Date(reminder.reminder_time).toLocaleDateString()}</span>
                         </div>
                       </div>
+                      <button 
+                        onClick={() => handleDeleteReminder(reminder.id)}
+                        className="text-red-500 hover:text-red-700 p-2"
+                      >
+                        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => handleDeleteReminder(reminder.id)}
-                      className="text-red-500 hover:text-red-700 p-2"
-                    >
-                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                        <line x1="14" y1="11" x2="14" y2="17"></line>
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <svg className="h-16 w-16 mx-auto mb-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 6v6l4 2"></path>
+                    <circle cx="12" cy="12" r="10"></circle>
+                  </svg>
+                  <p>No reminders yet. Create one to get started!</p>
+                </div>
+              )
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                <svg className="h-16 w-16 mx-auto mb-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 6v6l4 2"></path>
-                  <circle cx="12" cy="12" r="10"></circle>
-                </svg>
-                <p>No reminders yet. Create one to get started!</p>
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg border border-gray-200">
+                  <p className="font-medium text-gray-400">Sample: Turn off lights when leaving</p>
+                  <div className="flex text-sm text-gray-400 mt-1">
+                    <span className="mr-3">08:00</span>
+                    <span>Daily</span>
+                  </div>
+                </div>
+                <div className="p-4 rounded-lg border border-gray-200">
+                  <p className="font-medium text-gray-400">Sample: Check water usage</p>
+                  <div className="flex text-sm text-gray-400 mt-1">
+                    <span className="mr-3">19:00</span>
+                    <span>Weekly</span>
+                  </div>
+                </div>
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-500 mb-2">Log in to see your actual reminders</p>
+                  <Button variant="outline" onClick={() => window.location.href = '/auth'}>
+                    Sign In
+                  </Button>
+                </div>
               </div>
             )}
           </motion.div>

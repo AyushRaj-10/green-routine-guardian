@@ -1,109 +1,201 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Image, Send, Trash2 } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
+
+interface CommunityPost {
+  id: string;
+  title: string;
+  content: string;
+  image_url?: string;
+  likes_count: number;
+  created_at: string;
+  user_id: string;
+  profiles?: {
+    full_name?: string;
+    email?: string;
+  };
+}
 
 const CommunityPage = () => {
-  const [stories, setStories] = useState([
-    {
-      id: '1',
-      user: {
-        name: 'Jennifer L.',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-        level: 'Gold'
-      },
-      title: 'My Energy Saving Journey',
-      content: "I have managed to reduce my electricity usage by 30% this month by implementing simple changes in my daily routine. I started by replacing all light bulbs with LED alternatives, setting up timers for electronics, and being more mindful about my energy consumption. The difference is noticeable both for the environment and my utility bills!",
-      image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=800&q=80',
-      postedAt: '3 days ago',
-      likes: 42,
-      comments: 12,
-      isOwner: false
-    },
-    {
-      id: '2',
-      user: {
-        name: 'Robert W.',
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        level: 'Silver'
-      },
-      title: 'Creating a Sustainable Home',
-      content: "I have transformed my living space into an eco-friendly environment. Here are some tips on how you can do the same: use natural cleaning products, set up rainwater collection, compost food waste, and invest in energy-efficient appliances. Small changes really do add up to make a big difference!",
-      image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=800&q=80',
-      postedAt: '1 week ago',
-      likes: 78,
-      comments: 24,
-      isOwner: false
-    },
-    {
-      id: '3',
-      user: {
-        name: 'Ashley T.',
-        avatar: 'https://randomuser.me/api/portraits/women/67.jpg',
-        level: 'Gold'
-      },
-      title: 'Park Cleanup Success',
-      content: 'Our community came together to clean up Jefferson Park last weekend. We collected over 50 bags of trash and recyclables. It was amazing to see so many people come together for this cause. We found everything from plastic bottles to abandoned furniture. Looking forward to organizing more cleanup events in the future!',
-      image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=800&q=80',
-      postedAt: '2 weeks ago',
-      likes: 105,
-      comments: 36,
-      isOwner: false
-    },
-    {
-      id: '4',
-      user: {
-        name: 'Mark D.',
-        avatar: 'https://randomuser.me/api/portraits/men/81.jpg',
-        level: 'Bronze'
-      },
-      title: 'My First Tree Planting Experience',
-      content: 'I participated in the tree planting challenge this month and it was such a rewarding experience! I planted an oak tree in my local community garden. The process was easier than I expected, and I learned so much about proper tree care. Already looking forward to watching it grow over the coming years.',
-      image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
-      postedAt: '3 weeks ago',
-      likes: 67,
-      comments: 18,
-      isOwner: false
-    }
-  ]);
-
+  const { user } = useAuth();
+  const [stories, setStories] = useState<CommunityPost[]>([]);
   const [newStory, setNewStory] = useState({ title: '', content: '', image: '' });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmitStory = () => {
-    if (newStory.title && newStory.content) {
-      const story = {
-        id: (stories.length + 1).toString(),
-        user: {
-          name: 'You',
-          avatar: 'https://randomuser.me/api/portraits/lego/1.jpg',
-          level: 'Bronze'
-        },
-        title: newStory.title,
-        content: newStory.content,
-        image: newStory.image || '',
-        postedAt: 'Just now',
-        likes: 0,
-        comments: 0,
-        isOwner: true
-      };
-      setStories([story, ...stories]);
-      setNewStory({ title: '', content: '', image: '' });
+  useEffect(() => {
+    fetchCommunityPosts();
+  }, []);
+
+  const fetchCommunityPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('community_posts')
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            email
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setStories(data || []);
+    } catch (error) {
+      console.error('Error fetching community posts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load community posts",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLike = (storyId: string) => {
-    setStories(stories.map(story => 
-      story.id === storyId 
-        ? { ...story, likes: story.likes + 1 }
-        : story
-    ));
+  const handleSubmitStory = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to share your story",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!newStory.title || !newStory.content) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in both title and content",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('community_posts')
+        .insert([
+          {
+            user_id: user.id,
+            title: newStory.title,
+            content: newStory.content,
+            image_url: newStory.image || null
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Story shared!",
+        description: "Your story has been posted to the community"
+      });
+
+      setNewStory({ title: '', content: '', image: '' });
+      fetchCommunityPosts();
+    } catch (error) {
+      console.error('Error submitting story:', error);
+      toast({
+        title: "Error",
+        description: "Failed to share your story",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleDeleteStory = (storyId: string) => {
-    setStories(stories.filter(story => story.id !== storyId));
+  const handleLike = async (storyId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to like posts",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const story = stories.find(s => s.id === storyId);
+      if (!story) return;
+
+      const { error } = await supabase
+        .from('community_posts')
+        .update({ likes_count: story.likes_count + 1 })
+        .eq('id', storyId);
+
+      if (error) throw error;
+
+      setStories(stories.map(story => 
+        story.id === storyId 
+          ? { ...story, likes_count: story.likes_count + 1 }
+          : story
+      ));
+    } catch (error) {
+      console.error('Error liking post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to like the post",
+        variant: "destructive"
+      });
+    }
   };
+
+  const handleDeleteStory = async (storyId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('community_posts')
+        .delete()
+        .eq('id', storyId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Story deleted",
+        description: "Your story has been removed"
+      });
+
+      setStories(stories.filter(story => story.id !== storyId));
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete story",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getUserDisplayName = (post: CommunityPost) => {
+    if (post.profiles?.full_name) return post.profiles.full_name;
+    if (post.profiles?.email) return post.profiles.email.split('@')[0];
+    return 'Anonymous User';
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-green-50">
+        <Navbar />
+        <div className="pt-28 pb-16 text-center">
+          <p>Loading community posts...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-green-50">
@@ -123,52 +215,67 @@ const CommunityPage = () => {
           </motion.div>
 
           {/* Share Your Story Form */}
-          <motion.div 
-            className="bg-white rounded-xl shadow-lg p-6 mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Send className="w-5 h-5 text-green-600" />
-              Share Your Eco Story
-            </h3>
-            <div className="space-y-4">
-              <input 
-                type="text"
-                placeholder="Give your story a compelling title..."
-                value={newStory.title}
-                onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <textarea
-                placeholder="Share your journey, tips, or experiences with sustainable living..."
-                value={newStory.content}
-                onChange={(e) => setNewStory({ ...newStory, content: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg h-32 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
-              />
-              <input 
-                type="url"
-                placeholder="Add an image URL (optional)"
-                value={newStory.image}
-                onChange={(e) => setNewStory({ ...newStory, image: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <div className="flex items-center justify-between">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Image className="w-4 h-4" />
-                  Add Photo
-                </Button>
-                <Button 
-                  className="bg-green-500 hover:bg-green-600"
-                  onClick={handleSubmitStory}
-                  disabled={!newStory.title || !newStory.content}
-                >
-                  Share Your Story
-                </Button>
+          {user ? (
+            <motion.div 
+              className="bg-white rounded-xl shadow-lg p-6 mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                <Send className="w-5 h-5 text-green-600" />
+                Share Your Eco Story
+              </h3>
+              <div className="space-y-4">
+                <input 
+                  type="text"
+                  placeholder="Give your story a compelling title..."
+                  value={newStory.title}
+                  onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                <textarea
+                  placeholder="Share your journey, tips, or experiences with sustainable living..."
+                  value={newStory.content}
+                  onChange={(e) => setNewStory({ ...newStory, content: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg h-32 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+                <input 
+                  type="url"
+                  placeholder="Add an image URL (optional)"
+                  value={newStory.image}
+                  onChange={(e) => setNewStory({ ...newStory, image: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                <div className="flex items-center justify-between">
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Image className="w-4 h-4" />
+                    Add Photo
+                  </Button>
+                  <Button 
+                    className="bg-green-500 hover:bg-green-600"
+                    onClick={handleSubmitStory}
+                    disabled={!newStory.title || !newStory.content || submitting}
+                  >
+                    {submitting ? 'Sharing...' : 'Share Your Story'}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="bg-white rounded-xl shadow-lg p-6 mb-12 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <h3 className="text-xl font-bold mb-4">Join Our Community</h3>
+              <p className="text-gray-600 mb-4">Log in to share your eco-friendly stories and connect with others</p>
+              <Button onClick={() => window.location.href = '/auth'}>
+                Sign In to Share
+              </Button>
+            </motion.div>
+          )}
 
           {/* Community Stories */}
           <div className="space-y-8">
@@ -183,26 +290,19 @@ const CommunityPage = () => {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <img 
-                        src={story.user.avatar} 
-                        alt={story.user.name} 
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
+                      <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                        <span className="text-green-600 font-bold">
+                          {getUserDisplayName(story).charAt(0).toUpperCase()}
+                        </span>
+                      </div>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold">{story.user.name}</p>
-                          <span className={`px-2 py-0.5 text-xs rounded-full ${
-                            story.user.level === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
-                            story.user.level === 'Silver' ? 'bg-gray-100 text-gray-800' :
-                            'bg-orange-100 text-orange-800'
-                          }`}>
-                            {story.user.level}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-500">Posted {story.postedAt}</p>
+                        <p className="font-semibold">{getUserDisplayName(story)}</p>
+                        <p className="text-xs text-gray-500">
+                          Posted {new Date(story.created_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
-                    {story.isOwner && (
+                    {user && story.user_id === user.id && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -217,10 +317,10 @@ const CommunityPage = () => {
                   <h3 className="text-xl font-bold mb-3">{story.title}</h3>
                   <p className="text-gray-600 mb-4">{story.content}</p>
                   
-                  {story.image && (
+                  {story.image_url && (
                     <div className="mb-4 rounded-lg overflow-hidden">
                       <img 
-                        src={story.image} 
+                        src={story.image_url} 
                         alt={story.title} 
                         className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
                       />
@@ -234,21 +334,29 @@ const CommunityPage = () => {
                         onClick={() => handleLike(story.id)}
                       >
                         <Heart className="w-5 h-5" />
-                        <span>{story.likes}</span>
+                        <span>{story.likes_count}</span>
                       </button>
                       <button className="flex items-center gap-1 text-gray-500 hover:text-green-600 transition-colors">
                         <MessageCircle className="w-5 h-5" />
-                        <span>{story.comments}</span>
+                        <span>Comment</span>
                       </button>
                     </div>
-                    <Button size="sm" variant="outline" className="text-green-600 border-green-500 hover:bg-green-50">
-                      Comment
-                    </Button>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {stories.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 mb-4">No community posts yet. Be the first to share your story!</p>
+              {!user && (
+                <Button onClick={() => window.location.href = '/auth'}>
+                  Sign In to Share
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Community Stats */}
           <motion.div 
@@ -261,16 +369,18 @@ const CommunityPage = () => {
             <h3 className="text-2xl font-bold mb-6">Community Impact</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>
-                <p className="text-3xl font-bold mb-2">247</p>
+                <p className="text-3xl font-bold mb-2">{stories.length}</p>
                 <p className="text-green-100">Stories Shared</p>
               </div>
               <div>
-                <p className="text-3xl font-bold mb-2">1,540</p>
-                <p className="text-green-100">Community Members</p>
+                <p className="text-3xl font-bold mb-2">{stories.reduce((sum, story) => sum + story.likes_count, 0)}</p>
+                <p className="text-green-100">Total Likes</p>
               </div>
               <div>
-                <p className="text-3xl font-bold mb-2">89</p>
-                <p className="text-green-100">Environmental Projects</p>
+                <p className="text-3xl font-bold mb-2">
+                  {new Set(stories.map(story => story.user_id)).size}
+                </p>
+                <p className="text-green-100">Active Members</p>
               </div>
             </div>
           </motion.div>
