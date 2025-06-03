@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
@@ -15,6 +17,7 @@ import CalculatorPage from "./pages/CalculatorPage";
 import FAQPage from "./pages/FAQPage";
 import CommunityPage from "./pages/CommunityPage";
 import StoryPage from "./pages/StoryPage";
+import AuthPage from "./pages/AuthPage";
 
 const queryClient = new QueryClient();
 
@@ -36,22 +39,33 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/reminders" element={<RemindersPage />} />
-          <Route path="/challenges" element={<ChallengesPage />} />
-          <Route path="/calculator" element={<CalculatorPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/community" element={<CommunityPage />} />
-          <Route path="/story" element={<StoryPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/story" element={<StoryPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/reminders" element={
+              <ProtectedRoute>
+                <RemindersPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/challenges" element={<ChallengesPage />} />
+            <Route path="/calculator" element={<CalculatorPage />} />
+            <Route path="/community" element={<CommunityPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

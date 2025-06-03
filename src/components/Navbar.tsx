@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import UserProfile from './UserProfile';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,12 +13,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { cn } from '@/lib/utils';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,7 +38,6 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Keep background consistent for better contrast (always green)
   const navbarBackground = 'bg-green-600/95 backdrop-blur-sm' + (isScrolled ? ' shadow-md' : '');
 
   return (
@@ -175,11 +176,15 @@ const Navbar = () => {
           </NavigationMenu>
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button and User Profile */}
         <div className="flex items-center gap-4">
-          <Button size="sm" className="bg-white text-green-700 hover:bg-green-100 font-semibold" asChild>
-            <Link to="/dashboard">Get Started</Link>
-          </Button>
+          {user ? (
+            <UserProfile />
+          ) : (
+            <Button size="sm" className="bg-white text-green-700 hover:bg-green-100 font-semibold" asChild>
+              <Link to="/auth">Login</Link>
+            </Button>
+          )}
           
           {/* Mobile Menu Button */}
           <button 
@@ -212,9 +217,16 @@ const Navbar = () => {
               <li>
                 <Link to="/community" className="block py-2 text-green-800 hover:text-green-600">Community</Link>
               </li>
-              <li>
-                <Link to="/reminders" className="block py-2 text-green-800 hover:text-green-600">Reminders</Link>
-              </li>
+              {user && (
+                <>
+                  <li>
+                    <Link to="/reminders" className="block py-2 text-green-800 hover:text-green-600">Reminders</Link>
+                  </li>
+                  <li>
+                    <Link to="/dashboard" className="block py-2 text-green-800 hover:text-green-600">Dashboard</Link>
+                  </li>
+                </>
+              )}
               <li>
                 <Link to="/challenges" className="block py-2 text-green-800 hover:text-green-600">Challenges</Link>
               </li>
@@ -223,9 +235,6 @@ const Navbar = () => {
               </li>
               <li>
                 <Link to="/faq" className="block py-2 text-green-800 hover:text-green-600">FAQ</Link>
-              </li>
-              <li>
-                <Link to="/dashboard" className="block py-2 text-green-800 hover:text-green-600">Dashboard</Link>
               </li>
             </ul>
           </div>

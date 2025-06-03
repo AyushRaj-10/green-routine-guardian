@@ -1,5 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -7,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon, Clock, AlertCircle, Check } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, AlertCircle, Check, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/components/ui/use-toast';
 
@@ -15,18 +17,48 @@ type Reminder = {
   id: string;
   title: string;
   description: string;
-  date: Date;
-  time: string;
+  reminder_time: string;
+  is_completed: boolean;
+  created_at: string;
 }
 
 const RemindersPage = () => {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState('12:00');
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user) {
+      fetchReminders();
+    }
+  }, [user]);
+
+  const fetchReminders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reminders')
+        .select('*')
+        .order('reminder_time', { ascending: true });
+
+      if (error) throw error;
+      setReminders(data || []);
+    } catch (error) {
+      console.error('Error fetching reminders:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load reminders",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title || !date || !time) {
@@ -37,37 +69,103 @@ const RemindersPage = () => {
       });
       return;
     }
+
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to create reminders",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    const newReminder: Reminder = {
-      id: Date.now().toString(),
-      title,
-      description,
-      date: date!,
-      time
-    };
-    
-    setReminders([...reminders, newReminder]);
-    toast({
-      title: "Reminder created!",
-      description: "Your eco-friendly reminder has been set",
-      action: (
-        <Check className="h-4 w-4 text-green-500" />
-      ),
-    });
-    
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setDate(new Date());
-    setTime('12:00');
+    try {
+      const reminderDateTime = new Date(date);
+      const [hours, minutes] = time.split(':');
+      reminderDateTime.setHours(parseInt(hours), parseInt(minutes));
+
+      const { error } = await supabase
+        .from('reminders')
+        .insert([
+          {
+            user_id: user.id,
+            title,
+            description,
+            reminder_time: reminderDateTime.toISOString()
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Reminder created!",
+        description: "Your eco-friendly reminder has been set",
+        action: (
+          <Check className="h-4 w-4 text-green-500" />
+        ),
+      });
+      
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setDate(new Date());
+      setTime('12:00');
+      
+      // Refresh reminders
+      fetchReminders();
+    } catch (error) {
+      console.error('Error creating reminder:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create reminder",
+        variant: "destructive"
+      });
+    }
   };
 
-  const deleteReminder = (id: string) => {
-    setReminders(reminders.filter(reminder => reminder.id !== id));
-    toast({
-      title: "Reminder deleted",
-      description: "Your reminder has been removed"
-    });
+  const deleteReminder = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('reminders')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Reminder deleted",
+        description: "Your reminder has been removed"
+      });
+      
+      fetchReminders();
+    } catch (error) {
+      console.error('Error deleting reminder:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete reminder",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleComplete = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('reminders')
+        .update({ is_completed: !currentStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      fetchReminders();
+    } catch (error) {
+      console.error('Error updating reminder:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update reminder",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -168,7 +266,11 @@ const RemindersPage = () => {
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <h2 className="text-2xl font-semibold mb-6 text-green-700">Your Reminders</h2>
               
-              {reminders.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-12">
+                  <p>Loading your reminders...</p>
+                </div>
+              ) : reminders.length === 0 ? (
                 <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
                   <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
                   <h3 className="mt-4 text-lg font-medium text-gray-900">No reminders yet</h3>
@@ -179,18 +281,32 @@ const RemindersPage = () => {
               ) : (
                 <div className="space-y-4">
                   {reminders.map((reminder) => (
-                    <div key={reminder.id} className="border border-gray-200 rounded-lg p-4 hover:bg-green-50 transition-colors">
+                    <div key={reminder.id} className={`border border-gray-200 rounded-lg p-4 transition-colors ${
+                      reminder.is_completed ? 'bg-green-50' : 'hover:bg-green-50'
+                    }`}>
                       <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium">{reminder.title}</h3>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => toggleComplete(reminder.id, reminder.is_completed)}
+                              className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                reminder.is_completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-green-500'
+                              }`}
+                            >
+                              {reminder.is_completed && <Check className="w-3 h-3 text-white" />}
+                            </button>
+                            <h3 className={`font-medium ${reminder.is_completed ? 'line-through text-gray-500' : ''}`}>
+                              {reminder.title}
+                            </h3>
+                          </div>
                           {reminder.description && (
-                            <p className="text-sm text-gray-600 mt-1">{reminder.description}</p>
+                            <p className="text-sm text-gray-600 mt-1 ml-6">{reminder.description}</p>
                           )}
-                          <div className="flex items-center mt-2 text-sm text-gray-500">
+                          <div className="flex items-center mt-2 text-sm text-gray-500 ml-6">
                             <CalendarIcon className="h-3.5 w-3.5 mr-1" />
-                            <span>{format(reminder.date, 'PPP')}</span>
+                            <span>{format(new Date(reminder.reminder_time), 'PPP')}</span>
                             <Clock className="h-3.5 w-3.5 ml-3 mr-1" />
-                            <span>{reminder.time}</span>
+                            <span>{format(new Date(reminder.reminder_time), 'HH:mm')}</span>
                           </div>
                         </div>
                         <Button
@@ -199,7 +315,7 @@ const RemindersPage = () => {
                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
                           onClick={() => deleteReminder(reminder.id)}
                         >
-                          Delete
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
