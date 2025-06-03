@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,7 +39,7 @@ const CommunityPage = () => {
         .from('community_posts')
         .select(`
           *,
-          profiles:user_id (
+          profiles!community_posts_user_id_fkey (
             full_name,
             email
           )
