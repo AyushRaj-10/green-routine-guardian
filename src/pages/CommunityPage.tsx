@@ -39,7 +39,7 @@ const CommunityPage = () => {
         .from('community_posts')
         .select(`
           *,
-          profiles (
+          profiles!fk_community_posts_user_id (
             full_name,
             email
           )
