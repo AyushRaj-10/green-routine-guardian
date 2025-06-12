@@ -3,8 +3,6 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -26,6 +24,23 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Check if RESEND_API_KEY is available
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.error("RESEND_API_KEY environment variable is not set");
+      return new Response(
+        JSON.stringify({ 
+          error: "Email service not configured. Please set up RESEND_API_KEY." 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const resend = new Resend(resendApiKey);
+
     const { 
       reminderId, 
       userEmail, 
@@ -64,7 +79,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovable.app') || 'https://your-app.com'}/reminders" 
+              <a href="https://okbvrklpvkepeskznqyk.lovable.app/reminders" 
                  style="background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">
                 Manage My Reminders
               </a>
@@ -81,19 +96,40 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Reminder email sent successfully:", emailResponse);
+    console.log("Email send response:", emailResponse);
 
-    // Update the reminder to mark email as sent
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (supabaseUrl && supabaseKey) {
-      const supabase = createClient(supabaseUrl, supabaseKey);
+    if (emailResponse.error) {
+      console.error("Resend API error:", emailResponse.error);
+      return new Response(
+        JSON.stringify({ 
+          error: `Email sending failed: ${emailResponse.error.message}` 
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    console.log("Reminder email sent successfully:", emailResponse.data);
+
+    // Update the reminder to mark email as sent (only if it's not a test)
+    if (!reminderId.startsWith('test-')) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
       
-      await supabase
-        .from('reminders')
-        .update({ email_sent: true })
-        .eq('id', reminderId);
+      if (supabaseUrl && supabaseKey) {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        const { error: updateError } = await supabase
+          .from('reminders')
+          .update({ email_sent: true })
+          .eq('id', reminderId);
+
+        if (updateError) {
+          console.error('Error updating reminder:', updateError);
+        }
+      }
     }
 
     return new Response(JSON.stringify({ 

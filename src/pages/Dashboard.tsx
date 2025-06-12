@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,10 +37,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize smooth scrolling
     const lenis = initSmoothScroll();
-    
-    // Initialize scroll animations
     initScrollAnimations();
     
     return () => {
@@ -48,10 +46,12 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!authLoading && user) {
-      fetchUserData();
-    } else if (!authLoading && !user) {
-      setLoading(false);
+    if (!authLoading) {
+      if (user) {
+        fetchUserData();
+      } else {
+        setLoading(false);
+      }
     }
   }, [user, authLoading]);
 
@@ -66,7 +66,7 @@ const Dashboard = () => {
       setLoading(true);
       console.log('Fetching user data for:', user.id);
 
-      // Fetch user reminders with better error handling
+      // Fetch user reminders
       const { data: reminders, error: remindersError } = await supabase
         .from('reminders')
         .select('*')
@@ -75,14 +75,9 @@ const Dashboard = () => {
 
       if (remindersError) {
         console.error('Error fetching reminders:', remindersError);
-        toast({
-          title: "Warning",
-          description: "Could not load reminders data",
-          variant: "destructive"
-        });
       }
 
-      // Fetch user posts with better error handling
+      // Fetch user posts
       const { data: posts, error: postsError } = await supabase
         .from('community_posts')
         .select('*')
@@ -91,14 +86,9 @@ const Dashboard = () => {
 
       if (postsError) {
         console.error('Error fetching posts:', postsError);
-        toast({
-          title: "Warning", 
-          description: "Could not load community posts data",
-          variant: "destructive"
-        });
       }
 
-      // Process activities (combine reminders and posts)
+      // Process activities
       const reminderActivities: UserActivity[] = (reminders || []).slice(0, 3).map(reminder => ({
         id: reminder.id,
         title: `Created reminder: ${reminder.title}`,
@@ -150,12 +140,12 @@ const Dashboard = () => {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50">
         <Navbar />
         <div className="container mx-auto px-4 pt-24 pb-16 text-center">
-          <p>Loading your dashboard...</p>
+          <p>Loading...</p>
         </div>
         <Footer />
       </div>
@@ -172,6 +162,18 @@ const Dashboard = () => {
           <Button onClick={() => window.location.href = '/auth'}>
             Go to Login
           </Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-24 pb-16 text-center">
+          <p>Loading your dashboard...</p>
         </div>
         <Footer />
       </div>

@@ -41,7 +41,22 @@ const ReminderEmailTest = () => {
 
       if (error) {
         console.error('Error sending test email:', error);
-        throw error;
+        
+        // Check if it's a Resend API key issue
+        if (error.message?.includes('invalid') || error.message?.includes('API key')) {
+          toast({
+            title: "API Key Issue",
+            description: "Please verify your Resend API key is correct and has permission to send emails. Check the function logs for details.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to send test email. Please check the function logs for details.",
+            variant: "destructive"
+          });
+        }
+        return;
       }
 
       console.log('Test email sent successfully:', data);
@@ -55,7 +70,7 @@ const ReminderEmailTest = () => {
       console.error('Error sending test reminder email:', error);
       toast({
         title: "Error",
-        description: "Failed to send test email. Please try again.",
+        description: "Failed to send test email. Please check your Resend API key and try again.",
         variant: "destructive"
       });
     } finally {
@@ -75,6 +90,9 @@ const ReminderEmailTest = () => {
       </div>
       <p className="text-gray-600 mb-4">
         Test the email reminder system by sending a sample reminder to your email address.
+      </p>
+      <p className="text-sm text-gray-500 mb-4">
+        Make sure you have a valid Resend API key configured in your project settings.
       </p>
       <Button 
         onClick={sendTestReminderEmail} 
