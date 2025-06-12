@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ReminderEmailTest from '@/components/ReminderEmailTest';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,6 +42,7 @@ const RemindersPage = () => {
       const { data, error } = await supabase
         .from('reminders')
         .select('*')
+        .eq('user_id', user?.id)
         .order('reminder_time', { ascending: true });
 
       if (error) throw error;
@@ -84,7 +85,7 @@ const RemindersPage = () => {
       const [hours, minutes] = time.split(':');
       reminderDateTime.setHours(parseInt(hours), parseInt(minutes));
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('reminders')
         .insert([
           {
@@ -93,7 +94,9 @@ const RemindersPage = () => {
             description,
             reminder_time: reminderDateTime.toISOString()
           }
-        ]);
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
 
@@ -104,6 +107,30 @@ const RemindersPage = () => {
           <Check className="h-4 w-4 text-green-500" />
         ),
       });
+
+      // Send immediate email notification about the reminder creation
+      if (data) {
+        try {
+          await supabase.functions.invoke('send-reminder-email', {
+            body: {
+              reminderId: data.id,
+              userEmail: user.email,
+              userName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+              reminderTitle: title,
+              reminderDescription: description,
+              reminderTime: reminderDateTime.toISOString()
+            }
+          });
+          
+          toast({
+            title: "Email sent! 📧",
+            description: "A confirmation email has been sent to your inbox",
+          });
+        } catch (emailError) {
+          console.error('Error sending confirmation email:', emailError);
+          // Don't show error to user as the reminder was still created successfully
+        }
+      }
       
       // Reset form
       setTitle('');
@@ -178,7 +205,7 @@ const RemindersPage = () => {
             Create custom reminders to help you maintain sustainable habits in your daily routine
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {/* Create Reminder Form */}
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <h2 className="text-2xl font-semibold mb-6 text-green-700">Create New Reminder</h2>
@@ -323,6 +350,11 @@ const RemindersPage = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Email Test Component */}
+          <div className="max-w-md mx-auto">
+            <ReminderEmailTest />
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,7 +24,7 @@ interface UserReminder {
 }
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [activities, setActivities] = useState<UserActivity[]>([]);
   const [upcomingReminders, setUpcomingReminders] = useState<UserReminder[]>([]);
   const [userStats, setUserStats] = useState({
@@ -49,32 +48,55 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (!authLoading && user) {
       fetchUserData();
+    } else if (!authLoading && !user) {
+      setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchUserData = async () => {
+    if (!user) {
+      console.log('No user found');
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
+      console.log('Fetching user data for:', user.id);
 
-      // Fetch user reminders
+      // Fetch user reminders with better error handling
       const { data: reminders, error: remindersError } = await supabase
         .from('reminders')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (remindersError) throw remindersError;
+      if (remindersError) {
+        console.error('Error fetching reminders:', remindersError);
+        toast({
+          title: "Warning",
+          description: "Could not load reminders data",
+          variant: "destructive"
+        });
+      }
 
-      // Fetch user posts
+      // Fetch user posts with better error handling
       const { data: posts, error: postsError } = await supabase
         .from('community_posts')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (postsError) throw postsError;
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
+        toast({
+          title: "Warning", 
+          description: "Could not load community posts data",
+          variant: "destructive"
+        });
+      }
 
       // Process activities (combine reminders and posts)
       const reminderActivities: UserActivity[] = (reminders || []).slice(0, 3).map(reminder => ({
@@ -114,11 +136,13 @@ const Dashboard = () => {
         totalPoints
       });
 
+      console.log('User data loaded successfully');
+
     } catch (error) {
       console.error('Error fetching user data:', error);
       toast({
         title: "Error",
-        description: "Failed to load your dashboard data",
+        description: "Failed to load your dashboard data. Please try refreshing the page.",
         variant: "destructive"
       });
     } finally {
@@ -126,12 +150,28 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50">
         <Navbar />
         <div className="container mx-auto px-4 pt-24 pb-16 text-center">
           <p>Loading your dashboard...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-24 pb-16 text-center">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">Please Log In</h1>
+          <p className="text-gray-600 mb-8">You need to be logged in to view your dashboard.</p>
+          <Button onClick={() => window.location.href = '/auth'}>
+            Go to Login
+          </Button>
         </div>
         <Footer />
       </div>
@@ -145,7 +185,7 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 pt-24 pb-16">
         <header className="mb-10 fadeInDown">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Welcome Back, {user?.user_metadata?.full_name || user?.email || 'User'}!
+            Welcome Back, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}!
           </h1>
           <p className="text-gray-600">Your sustainable journey continues. Today is a new opportunity to make a positive impact!</p>
         </header>
