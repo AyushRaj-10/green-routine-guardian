@@ -111,7 +111,7 @@ const RemindersPage = () => {
       // Send immediate email notification about the reminder creation
       if (data) {
         try {
-          await supabase.functions.invoke('send-reminder-email', {
+          const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-reminder-email', {
             body: {
               reminderId: data.id,
               userEmail: user.email,
@@ -122,13 +122,27 @@ const RemindersPage = () => {
             }
           });
           
-          toast({
-            title: "Email sent! 📧",
-            description: "A confirmation email has been sent to your inbox",
-          });
+          if (emailError) {
+            console.error('Email function error:', emailError);
+            toast({
+              title: "Reminder created!",
+              description: "Reminder created but email notification failed. Please check your email settings.",
+              variant: "destructive"
+            });
+          } else {
+            console.log('Email sent successfully:', emailResult);
+            toast({
+              title: "Email sent! 📧",
+              description: "A confirmation email has been sent to your inbox",
+            });
+          }
         } catch (emailError) {
           console.error('Error sending confirmation email:', emailError);
-          // Don't show error to user as the reminder was still created successfully
+          toast({
+            title: "Reminder created!",
+            description: "Reminder created but email notification failed.",
+            variant: "destructive"
+          });
         }
       }
       

@@ -35,19 +35,31 @@ const CommunityPage = () => {
 
   const fetchCommunityPosts = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch community posts
+      const { data: posts, error: postsError } = await supabase
         .from('community_posts')
-        .select(`
-          *,
-          profiles!fk_community_posts_user_id (
-            full_name,
-            email
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setStories(data || []);
+      if (postsError) throw postsError;
+
+      // Fetch profiles for each post
+      const postsWithProfiles = await Promise.all(
+        (posts || []).map(async (post) => {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, email')
+            .eq('id', post.user_id)
+            .single();
+          
+          return {
+            ...post,
+            profiles: profile
+          };
+        })
+      );
+
+      setStories(postsWithProfiles);
     } catch (error) {
       console.error('Error fetching community posts:', error);
       toast({
