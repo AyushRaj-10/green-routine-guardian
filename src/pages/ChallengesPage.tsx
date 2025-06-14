@@ -2,12 +2,18 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Leaf } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 const ChallengesPage = () => {
+  const { user } = useAuth();
   const [joinedChallenges, setJoinedChallenges] = useState<string[]>([]);
+  const [userPoints, setUserPoints] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // Regular challenges with normal points
   const challenges = [
@@ -119,11 +125,116 @@ const ChallengesPage = () => {
     }
   ];
 
-  const toggleJoinChallenge = (id: string) => {
-    if (joinedChallenges.includes(id)) {
-      setJoinedChallenges(joinedChallenges.filter(c => c !== id));
-    } else {
-      setJoinedChallenges([...joinedChallenges, id]);
+  useEffect(() => {
+    if (user) {
+      fetchUserChallenges();
+      fetchUserPoints();
+    }
+  }, [user]);
+
+  const fetchUserChallenges = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_challenges')
+        .select('challenge_id')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setJoinedChallenges(data?.map(c => c.challenge_id) || []);
+    } catch (error) {
+      console.error('Error fetching user challenges:', error);
+    }
+  };
+
+  const fetchUserPoints = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_points')
+        .select('total_points')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setUserPoints(data?.total_points || 0);
+    } catch (error) {
+      console.error('Error fetching user points:', error);
+    }
+  };
+
+  const toggleJoinChallenge = async (id: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to join challenges",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      if (joinedChallenges.includes(id)) {
+        // Leave challenge
+        const { error } = await supabase
+          .from('user_challenges')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('challenge_id', id);
+
+        if (error) throw error;
+
+        setJoinedChallenges(joinedChallenges.filter(c => c !== id));
+        
+        toast({
+          title: "Challenge left",
+          description: "You have left this challenge"
+        });
+      } else {
+        // Join challenge
+        const challenge = [...challenges, ...challengeOfTheMonth].find(c => c.id === id);
+        if (!challenge) return;
+
+        const { error } = await supabase
+          .from('user_challenges')
+          .insert([{
+            user_id: user.id,
+            challenge_id: id
+          }]);
+
+        if (error) throw error;
+
+        // Award points
+        const { error: pointsError } = await supabase
+          .from('user_points')
+          .upsert({
+            user_id: user.id,
+            total_points: userPoints + challenge.points
+          });
+
+        if (pointsError) throw pointsError;
+
+        setJoinedChallenges([...joinedChallenges, id]);
+        setUserPoints(userPoints + challenge.points);
+        
+        toast({
+          title: "Challenge joined! 🎉",
+          description: `You earned ${challenge.points} points for joining "${challenge.title}"`
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling challenge:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update challenge status",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -185,6 +296,7 @@ const ChallengesPage = () => {
               : "bg-green-500 hover:bg-green-600 text-white"
           }
           onClick={() => toggleJoinChallenge(challenge.id)}
+          disabled={loading}
         >
           {joinedChallenges.includes(challenge.id) ? (
             <>
@@ -205,9 +317,23 @@ const ChallengesPage = () => {
       <div className="pt-28 pb-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-2 text-center">Environmental Challenges</h1>
-          <p className="text-xl text-gray-600 mb-8 text-center max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 mb-4 text-center max-w-2xl mx-auto">
             Join challenges to make a bigger impact and earn points for your contributions
           </p>
+          
+          {user && (
+            <div className="text-center mb-8">
+              <motion.div 
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 px-6 py-3 rounded-full border border-yellow-200"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Leaf className="w-5 h-5 text-yellow-600" />
+                <span className="font-semibold text-yellow-800">Your Points: {userPoints}</span>
+              </motion.div>
+            </div>
+          )}
 
           {/* Challenge of the Month Section */}
           <div className="mb-12">

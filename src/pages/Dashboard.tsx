@@ -33,7 +33,9 @@ const Dashboard = () => {
     totalReminders: 0,
     completedReminders: 0,
     totalPosts: 0,
-    totalPoints: 0
+    totalPoints: 0,
+    joinedChallenges: 0,
+    completedChallenges: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -89,6 +91,27 @@ const Dashboard = () => {
         console.error('Error fetching posts:', postsError);
       }
 
+      // Fetch user points
+      const { data: pointsData, error: pointsError } = await supabase
+        .from('user_points')
+        .select('total_points')
+        .eq('user_id', user.id)
+        .single();
+
+      if (pointsError && pointsError.code !== 'PGRST116') {
+        console.error('Error fetching points:', pointsError);
+      }
+
+      // Fetch user challenges
+      const { data: userChallenges, error: challengesError } = await supabase
+        .from('user_challenges')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (challengesError) {
+        console.error('Error fetching challenges:', challengesError);
+      }
+
       // Process activities
       const reminderActivities: UserActivity[] = (reminders || []).slice(0, 3).map(reminder => ({
         id: reminder.id,
@@ -118,13 +141,17 @@ const Dashboard = () => {
 
       // Calculate stats
       const completedCount = (reminders || []).filter(r => r.is_completed).length;
-      const totalPoints = completedCount * 10 + (posts || []).length * 25;
+      const joinedChallengesCount = (userChallenges || []).length;
+      const completedChallengesCount = (userChallenges || []).filter(c => c.is_completed).length;
+      const totalPointsFromDB = pointsData?.total_points || 0;
 
       setUserStats({
         totalReminders: (reminders || []).length,
         completedReminders: completedCount,
         totalPosts: (posts || []).length,
-        totalPoints
+        totalPoints: totalPointsFromDB,
+        joinedChallenges: joinedChallengesCount,
+        completedChallenges: completedChallengesCount
       });
 
       console.log('User data loaded successfully');
@@ -227,21 +254,21 @@ const Dashboard = () => {
                 >
                   {userStats.totalPoints}
                 </motion.p>
-                <p className="text-sm text-gray-600">Total Points</p>
+                <p className="text-sm text-gray-600">Challenge Points</p>
               </motion.div>
               <motion.div 
                 className="text-center p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl"
                 whileHover={{ scale: 1.1 }}
               >
-                <p className="text-blue-600 text-2xl font-bold">{userStats.totalReminders}</p>
-                <p className="text-sm text-gray-600">Total Reminders</p>
+                <p className="text-blue-600 text-2xl font-bold">{userStats.joinedChallenges}</p>
+                <p className="text-sm text-gray-600">Joined Challenges</p>
               </motion.div>
               <motion.div 
                 className="text-center p-3 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl"
                 whileHover={{ scale: 1.1 }}
               >
-                <p className="text-yellow-600 text-2xl font-bold">{userStats.completedReminders}</p>
-                <p className="text-sm text-gray-600">Completed</p>
+                <p className="text-yellow-600 text-2xl font-bold">{userStats.totalReminders}</p>
+                <p className="text-sm text-gray-600">Active Reminders</p>
               </motion.div>
               <motion.div 
                 className="text-center p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl"
