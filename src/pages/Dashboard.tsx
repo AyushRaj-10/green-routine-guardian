@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { initSmoothScroll, initScrollAnimations } from '@/utils/scrollUtils';
 import { toast } from '@/components/ui/use-toast';
+import { motion } from 'framer-motion';
 
 interface UserActivity {
   id: string;
@@ -142,12 +143,20 @@ const Dashboard = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50">
-        <Navbar />
-        <div className="container mx-auto px-4 pt-24 pb-16 text-center">
-          <p>Loading...</p>
-        </div>
-        <Footer />
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mx-auto mb-4"
+          />
+          <p className="text-lg font-medium text-muted-foreground">Loading your dashboard...</p>
+        </motion.div>
       </div>
     );
   }
@@ -181,41 +190,75 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       <Navbar />
       
       <main className="container mx-auto px-4 pt-24 pb-16">
-        <header className="mb-10 fadeInDown">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Welcome Back, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}!
+        <motion.header 
+          className="mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+            Welcome Back, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}! 👋
           </h1>
-          <p className="text-gray-600">Your sustainable journey continues. Today is a new opportunity to make a positive impact!</p>
-        </header>
+          <p className="text-muted-foreground text-lg">Your sustainable journey continues. Today is a new opportunity to make a positive impact!</p>
+        </motion.header>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <Card className="p-6 shadow-md fadeInUp">
+          <motion.div 
+            className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-xl transition-all duration-300"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <h2 className="text-xl font-bold text-gray-800 mb-4">Your Impact Summary</h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-green-100 rounded-lg">
-                <p className="text-green-600 text-2xl font-bold">{userStats.totalPoints}</p>
+              <motion.div 
+                className="text-center p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl"
+                whileHover={{ scale: 1.1 }}
+              >
+                <motion.p 
+                  className="text-green-600 text-2xl font-bold"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {userStats.totalPoints}
+                </motion.p>
                 <p className="text-sm text-gray-600">Total Points</p>
-              </div>
-              <div className="text-center p-3 bg-blue-100 rounded-lg">
+              </motion.div>
+              <motion.div 
+                className="text-center p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl"
+                whileHover={{ scale: 1.1 }}
+              >
                 <p className="text-blue-600 text-2xl font-bold">{userStats.totalReminders}</p>
                 <p className="text-sm text-gray-600">Total Reminders</p>
-              </div>
-              <div className="text-center p-3 bg-yellow-100 rounded-lg">
+              </motion.div>
+              <motion.div 
+                className="text-center p-3 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl"
+                whileHover={{ scale: 1.1 }}
+              >
                 <p className="text-yellow-600 text-2xl font-bold">{userStats.completedReminders}</p>
                 <p className="text-sm text-gray-600">Completed</p>
-              </div>
-              <div className="text-center p-3 bg-purple-100 rounded-lg">
+              </motion.div>
+              <motion.div 
+                className="text-center p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl"
+                whileHover={{ scale: 1.1 }}
+              >
                 <p className="text-purple-600 text-2xl font-bold">{userStats.totalPosts}</p>
                 <p className="text-sm text-gray-600">Stories Shared</p>
-              </div>
+              </motion.div>
             </div>
-          </Card>
+          </motion.div>
           
-          <Card className="p-6 shadow-md md:col-span-2 fadeInUp">
+          <motion.div 
+            className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-green-100 md:col-span-2 hover:shadow-xl transition-all duration-300"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Your Recent Activities</h2>
               <Button variant="outline" size="sm">View All</Button>
@@ -250,11 +293,17 @@ const Dashboard = () => {
                 <p>No activities yet. Start by creating a reminder or sharing your story!</p>
               </div>
             )}
-          </Card>
+          </motion.div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-6 shadow-md fadeInUp">
+          <motion.div 
+            className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-xl transition-all duration-300"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Upcoming Reminders</h2>
               <Button variant="outline" size="sm" onClick={() => window.location.href = '/reminders'}>
@@ -263,14 +312,21 @@ const Dashboard = () => {
             </div>
             {upcomingReminders.length > 0 ? (
               <div className="space-y-3">
-                {upcomingReminders.map(reminder => (
-                  <div key={reminder.id} className="p-3 border border-gray-200 rounded-lg">
+                {upcomingReminders.map((reminder, index) => (
+                  <motion.div 
+                    key={reminder.id} 
+                    className="p-3 border border-gray-200 rounded-lg bg-gradient-to-r from-green-50 to-blue-50"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                  >
                     <div className="flex justify-between text-sm text-gray-500 mb-1">
                       <span>{new Date(reminder.reminder_time).toLocaleDateString()}</span>
                       <span>{new Date(reminder.reminder_time).toLocaleTimeString()}</span>
                     </div>
                     <p className="font-medium">{reminder.title}</p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             ) : (
@@ -281,22 +337,34 @@ const Dashboard = () => {
                 </Button>
               </div>
             )}
-          </Card>
+          </motion.div>
           
-          <Card className="p-6 shadow-md fadeInUp">
+          <motion.div 
+            className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-xl transition-all duration-300"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Today's Eco Tip</h2>
               <Button variant="outline" size="sm">Share</Button>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-              <h3 className="font-bold text-green-700 mb-2">Energy Conservation</h3>
-              <p className="text-gray-700">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+              <h3 className="font-bold text-green-700 mb-2">Energy Conservation ⚡</h3>
+              <p className="text-gray-700 mb-4">
                 Use natural light whenever possible and turn off lights when leaving a room. 
                 Unplug electronic devices when not in use to save energy.
               </p>
-              <Button className="w-full mt-4 bg-green-600 hover:bg-green-700">Try This Today</Button>
+              <motion.button
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Try This Today ✨
+              </motion.button>
             </div>
-          </Card>
+          </motion.div>
         </div>
       </main>
       

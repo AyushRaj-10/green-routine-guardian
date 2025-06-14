@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ReminderEmailTest from '@/components/ReminderEmailTest';
+import EnhancedReminderEmailTest from '@/components/EnhancedReminderEmailTest';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -367,8 +367,8 @@ const RemindersPage = () => {
           </div>
 
           {/* Email Test Component */}
-          <div className="max-w-md mx-auto">
-            <ReminderEmailTest />
+          <div className="max-w-lg mx-auto">
+            <EnhancedReminderEmailTest />
           </div>
         </div>
       </div>

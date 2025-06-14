@@ -35,38 +35,55 @@ const CommunityPage = () => {
 
   const fetchCommunityPosts = async () => {
     try {
-      // Fetch community posts
+      console.log('Fetching community posts...');
+      
+      // First, fetch community posts
       const { data: posts, error: postsError } = await supabase
         .from('community_posts')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (postsError) throw postsError;
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
+        throw postsError;
+      }
 
-      // Fetch profiles for each post
-      const postsWithProfiles = await Promise.all(
-        (posts || []).map(async (post) => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, email')
-            .eq('id', post.user_id)
-            .single();
-          
-          return {
-            ...post,
-            profiles: profile
-          };
-        })
-      );
+      console.log('Fetched posts:', posts);
 
-      setStories(postsWithProfiles);
+      // Then fetch user profiles for each post
+      if (posts && posts.length > 0) {
+        const postsWithProfiles = await Promise.all(
+          posts.map(async (post) => {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('full_name, email')
+              .eq('id', post.user_id)
+              .maybeSingle();
+            
+            if (profileError) {
+              console.error('Error fetching profile for user:', post.user_id, profileError);
+            }
+            
+            return {
+              ...post,
+              profiles: profile || { full_name: 'Anonymous', email: '' }
+            };
+          })
+        );
+
+        console.log('Posts with profiles:', postsWithProfiles);
+        setStories(postsWithProfiles);
+      } else {
+        setStories([]);
+      }
     } catch (error) {
-      console.error('Error fetching community posts:', error);
+      console.error('Error in fetchCommunityPosts:', error);
       toast({
         title: "Error",
-        description: "Failed to load community posts",
+        description: "Failed to load community posts. Please refresh the page.",
         variant: "destructive"
       });
+      setStories([]);
     } finally {
       setLoading(false);
     }
@@ -94,7 +111,9 @@ const CommunityPage = () => {
     setSubmitting(true);
 
     try {
-      const { error } = await supabase
+      console.log('Submitting story for user:', user.id);
+      
+      const { data, error } = await supabase
         .from('community_posts')
         .insert([
           {
@@ -103,22 +122,31 @@ const CommunityPage = () => {
             content: newStory.content,
             image_url: newStory.image || null
           }
-        ]);
+        ])
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting post:', error);
+        throw error;
+      }
+
+      console.log('Post created successfully:', data);
 
       toast({
-        title: "Story shared!",
+        title: "Story shared! 🎉",
         description: "Your story has been posted to the community"
       });
 
       setNewStory({ title: '', content: '', image: '' });
-      fetchCommunityPosts();
+      
+      // Refresh the posts to show the new one
+      await fetchCommunityPosts();
     } catch (error) {
       console.error('Error submitting story:', error);
       toast({
         title: "Error",
-        description: "Failed to share your story",
+        description: `Failed to share your story: ${error.message}`,
         variant: "destructive"
       });
     } finally {
@@ -209,18 +237,20 @@ const CommunityPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       <Navbar />
       <div className="pt-28 pb-16">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl font-bold mb-4">Community Stories</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+              Community Stories
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Share your eco-friendly journey and inspire others in our community
             </p>
           </motion.div>
@@ -228,48 +258,73 @@ const CommunityPage = () => {
           {/* Share Your Story Form */}
           {user ? (
             <motion.div 
-              className="bg-white rounded-xl shadow-lg p-6 mb-12"
-              initial={{ opacity: 0, y: 20 }}
+              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-green-100 p-8 mb-12 hover:shadow-2xl transition-all duration-300"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
             >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <Send className="w-5 h-5 text-green-600" />
-                Share Your Eco Story
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <motion.div
+                  animate={{ rotate: [0, 10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Send className="w-6 h-6 text-green-600" />
+                </motion.div>
+                <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                  Share Your Eco Story
+                </span>
               </h3>
-              <div className="space-y-4">
-                <input 
+              <div className="space-y-6">
+                <motion.input 
                   type="text"
                   placeholder="Give your story a compelling title..."
                   value={newStory.title}
                   onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full p-4 border-2 border-green-200 rounded-xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 text-lg"
+                  whileFocus={{ scale: 1.02 }}
                 />
-                <textarea
+                <motion.textarea
                   placeholder="Share your journey, tips, or experiences with sustainable living..."
                   value={newStory.content}
                   onChange={(e) => setNewStory({ ...newStory, content: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg h-32 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  className="w-full p-4 border-2 border-green-200 rounded-xl h-40 focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 resize-none text-lg"
+                  whileFocus={{ scale: 1.02 }}
                 />
-                <input 
+                <motion.input 
                   type="url"
                   placeholder="Add an image URL (optional)"
                   value={newStory.image}
                   onChange={(e) => setNewStory({ ...newStory, image: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full p-4 border-2 border-green-200 rounded-xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300"
+                  whileFocus={{ scale: 1.02 }}
                 />
                 <div className="flex items-center justify-between">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Image className="w-4 h-4" />
+                  <motion.button
+                    className="flex items-center gap-2 px-6 py-3 border-2 border-green-300 text-green-700 rounded-xl hover:bg-green-50 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Image className="w-5 h-5" />
                     Add Photo
-                  </Button>
-                  <Button 
-                    className="bg-green-500 hover:bg-green-600"
+                  </motion.button>
+                  <motion.button 
+                    className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleSubmitStory}
                     disabled={!newStory.title || !newStory.content || submitting}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {submitting ? 'Sharing...' : 'Share Your Story'}
-                  </Button>
+                    {submitting ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      />
+                    ) : (
+                      'Share Your Story ✨'
+                    )}
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -293,10 +348,11 @@ const CommunityPage = () => {
             {stories.map((story, index) => (
               <motion.div 
                 key={story.id} 
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
-                initial={{ opacity: 0, y: 20 }}
+                className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100 overflow-hidden hover:shadow-2xl transition-all duration-500 group"
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, y: -5 }}
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
