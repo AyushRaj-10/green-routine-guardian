@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,7 +38,6 @@ const CommunityPage = () => {
     try {
       console.log('Fetching community posts...');
       
-      // First, fetch community posts
       const { data: posts, error: postsError } = await supabase
         .from('community_posts')
         .select('*')
@@ -50,7 +50,6 @@ const CommunityPage = () => {
 
       console.log('Fetched posts:', posts);
 
-      // Then fetch user profiles for each post
       if (posts && posts.length > 0) {
         const postsWithProfiles = await Promise.all(
           posts.map(async (post) => {
@@ -76,7 +75,7 @@ const CommunityPage = () => {
       } else {
         setStories([]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in fetchCommunityPosts:', error);
       toast({
         title: "Error",
@@ -99,7 +98,7 @@ const CommunityPage = () => {
       return;
     }
 
-    if (!newStory.title || !newStory.content) {
+    if (!newStory.title.trim() || !newStory.content.trim()) {
       toast({
         title: "Missing information",
         description: "Please fill in both title and content",
@@ -118,9 +117,9 @@ const CommunityPage = () => {
         .insert([
           {
             user_id: user.id,
-            title: newStory.title,
-            content: newStory.content,
-            image_url: newStory.image || null
+            title: newStory.title.trim(),
+            content: newStory.content.trim(),
+            image_url: newStory.image.trim() || null
           }
         ])
         .select()
@@ -140,9 +139,9 @@ const CommunityPage = () => {
 
       setNewStory({ title: '', content: '', image: '' });
       
-      // Refresh the posts to show the new one
+      // Refresh the posts immediately to show the new one
       await fetchCommunityPosts();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting story:', error);
       toast({
         title: "Error",
@@ -180,7 +179,12 @@ const CommunityPage = () => {
           ? { ...story, likes_count: story.likes_count + 1 }
           : story
       ));
-    } catch (error) {
+
+      toast({
+        title: "Liked! ❤️",
+        description: "Thanks for showing your support!"
+      });
+    } catch (error: any) {
       console.error('Error liking post:', error);
       toast({
         title: "Error",
@@ -208,7 +212,7 @@ const CommunityPage = () => {
       });
 
       setStories(stories.filter(story => story.id !== storyId));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting story:', error);
       toast({
         title: "Error",
@@ -229,7 +233,10 @@ const CommunityPage = () => {
       <div className="min-h-screen bg-green-50">
         <Navbar />
         <div className="pt-28 pb-16 text-center">
-          <p>Loading community posts...</p>
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+            <p className="ml-4 text-lg">Loading community posts...</p>
+          </div>
         </div>
         <Footer />
       </div>
@@ -311,7 +318,7 @@ const CommunityPage = () => {
                   <motion.button 
                     className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleSubmitStory}
-                    disabled={!newStory.title || !newStory.content || submitting}
+                    disabled={!newStory.title.trim() || !newStory.content.trim() || submitting}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

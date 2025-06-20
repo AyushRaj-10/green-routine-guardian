@@ -24,13 +24,12 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Check if RESEND_API_KEY is available
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
       console.error("RESEND_API_KEY environment variable is not set");
       return new Response(
         JSON.stringify({ 
-          error: "Email service not configured. Please set up RESEND_API_KEY." 
+          error: "Email service not configured. Please set up RESEND_API_KEY in Supabase settings." 
         }),
         {
           status: 500,
@@ -145,7 +144,10 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in send-reminder-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message || "An unexpected error occurred",
+        details: "Please check if RESEND_API_KEY is properly configured in Supabase settings."
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
