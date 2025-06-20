@@ -1,465 +1,439 @@
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { Link } from 'react-router-dom';
+import { 
+  Heart, 
+  MessageCircle, 
+  Share2, 
+  Leaf, 
+  Users, 
+  TrendingUp,
+  Calendar,
+  Send,
+  Image as ImageIcon,
+  Hash
+} from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Image, Send, Trash2 } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
 
 interface CommunityPost {
   id: string;
   title: string;
   content: string;
-  image_url?: string;
-  likes_count: number;
-  created_at: string;
   user_id: string;
-  profiles?: {
-    full_name?: string;
-    email?: string;
+  created_at: string;
+  likes_count: number;
+  comments_count: number;
+  category: string;
+  profiles: {
+    full_name: string;
   };
 }
 
 const CommunityPage = () => {
   const { user } = useAuth();
-  const [stories, setStories] = useState<CommunityPost[]>([]);
-  const [newStory, setNewStory] = useState({ title: '', content: '', image: '' });
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [newPostContent, setNewPostContent] = useState('');
+  const [newPostCategory, setNewPostCategory] = useState('general');
+  const [posting, setPosting] = useState(false);
 
-  useEffect(() => {
-    fetchCommunityPosts();
-  }, []);
+  const categories = [
+    { value: 'general', label: 'General', icon: MessageCircle },
+    { value: 'energy', label: 'Energy', icon: TrendingUp },
+    { value: 'waste', label: 'Waste', icon: Hash },
+    { value: 'water', label: 'Water', icon: Calendar },
+    { value: 'transport', label: 'Transport', icon: Share2 },
+    { value: 'food', label: 'Food', icon: Leaf }
+  ];
 
-  const fetchCommunityPosts = async () => {
+  const fetchPosts = async () => {
     try {
-      console.log('Fetching community posts...');
-      
-      const { data: posts, error: postsError } = await supabase
+      const { data, error } = await supabase
         .from('community_posts')
-        .select('*')
+        .select(`
+          *,
+          profiles!community_posts_user_id_fkey (
+            full_name
+          )
+        `)
         .order('created_at', { ascending: false });
 
-      if (postsError) {
-        console.error('Error fetching posts:', postsError);
-        throw postsError;
+      if (error) {
+        console.error('Error fetching posts:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load community posts. Please try again.",
+          variant: "destructive"
+        });
+        return;
       }
 
-      console.log('Fetched posts:', posts);
-
-      if (posts && posts.length > 0) {
-        const postsWithProfiles = await Promise.all(
-          posts.map(async (post) => {
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('full_name, email')
-              .eq('id', post.user_id)
-              .maybeSingle();
-            
-            if (profileError) {
-              console.error('Error fetching profile for user:', post.user_id, profileError);
-            }
-            
-            return {
-              ...post,
-              profiles: profile || { full_name: 'Anonymous', email: '' }
-            };
-          })
-        );
-
-        console.log('Posts with profiles:', postsWithProfiles);
-        setStories(postsWithProfiles);
-      } else {
-        setStories([]);
-      }
-    } catch (error: any) {
-      console.error('Error in fetchCommunityPosts:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load community posts. Please refresh the page.",
-        variant: "destructive"
-      });
-      setStories([]);
+      setPosts(data || []);
+    } catch (error) {
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmitStory = async () => {
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const handleCreatePost = async () => {
     if (!user) {
       toast({
-        title: "Authentication required",
-        description: "Please log in to share your story",
+        title: "Authentication Required",
+        description: "Please log in to create posts and join our community!",
         variant: "destructive"
       });
       return;
     }
 
-    if (!newStory.title.trim() || !newStory.content.trim()) {
+    if (!newPostTitle.trim() || !newPostContent.trim()) {
       toast({
-        title: "Missing information",
-        description: "Please fill in both title and content",
+        title: "Missing Information",
+        description: "Please provide both a title and content for your post.",
         variant: "destructive"
       });
       return;
     }
 
-    setSubmitting(true);
-
+    setPosting(true);
+    
     try {
-      console.log('Submitting story for user:', user.id);
-      
       const { data, error } = await supabase
         .from('community_posts')
-        .insert([
-          {
-            user_id: user.id,
-            title: newStory.title.trim(),
-            content: newStory.content.trim(),
-            image_url: newStory.image.trim() || null
-          }
-        ])
-        .select()
+        .insert({
+          title: newPostTitle.trim(),
+          content: newPostContent.trim(),
+          category: newPostCategory,
+          user_id: user.id,
+          likes_count: 0,
+          comments_count: 0
+        })
+        .select(`
+          *,
+          profiles!community_posts_user_id_fkey (
+            full_name
+          )
+        `)
         .single();
 
       if (error) {
-        console.error('Error inserting post:', error);
-        throw error;
+        console.error('Error creating post:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create post. Please try again.",
+          variant: "destructive"
+        });
+        return;
       }
 
-      console.log('Post created successfully:', data);
+      // Add the new post to the beginning of the posts array
+      setPosts(prevPosts => [data, ...prevPosts]);
+
+      // Clear the form
+      setNewPostTitle('');
+      setNewPostContent('');
+      setNewPostCategory('general');
 
       toast({
-        title: "Story shared! 🎉",
-        description: "Your story has been posted to the community"
+        title: "Post Created! 🎉",
+        description: "Your post has been shared with the community.",
       });
-
-      setNewStory({ title: '', content: '', image: '' });
-      
-      // Refresh the posts immediately to show the new one
-      await fetchCommunityPosts();
-    } catch (error: any) {
-      console.error('Error submitting story:', error);
+    } catch (error) {
+      console.error('Error:', error);
       toast({
         title: "Error",
-        description: `Failed to share your story: ${error.message}`,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setSubmitting(false);
+      setPosting(false);
     }
   };
 
-  const handleLike = async (storyId: string) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to like posts",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const story = stories.find(s => s.id === storyId);
-      if (!story) return;
-
-      const { error } = await supabase
-        .from('community_posts')
-        .update({ likes_count: story.likes_count + 1 })
-        .eq('id', storyId);
-
-      if (error) throw error;
-
-      setStories(stories.map(story => 
-        story.id === storyId 
-          ? { ...story, likes_count: story.likes_count + 1 }
-          : story
-      ));
-
-      toast({
-        title: "Liked! ❤️",
-        description: "Thanks for showing your support!"
-      });
-    } catch (error: any) {
-      console.error('Error liking post:', error);
-      toast({
-        title: "Error",
-        description: "Failed to like the post",
-        variant: "destructive"
-      });
-    }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return 'Today';
+    if (diffDays === 2) return 'Yesterday';
+    if (diffDays <= 7) return `${diffDays - 1} days ago`;
+    
+    return date.toLocaleDateString();
   };
 
-  const handleDeleteStory = async (storyId: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('community_posts')
-        .delete()
-        .eq('id', storyId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Story deleted",
-        description: "Your story has been removed"
-      });
-
-      setStories(stories.filter(story => story.id !== storyId));
-    } catch (error: any) {
-      console.error('Error deleting story:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete story",
-        variant: "destructive"
-      });
-    }
+  const getCategoryIcon = (category: string) => {
+    const categoryData = categories.find(cat => cat.value === category);
+    return categoryData ? categoryData.icon : MessageCircle;
   };
 
-  const getUserDisplayName = (post: CommunityPost) => {
-    if (post.profiles?.full_name) return post.profiles.full_name;
-    if (post.profiles?.email) return post.profiles.email.split('@')[0];
-    return 'Anonymous User';
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      general: 'bg-gray-100 text-gray-800',
+      energy: 'bg-yellow-100 text-yellow-800',
+      waste: 'bg-red-100 text-red-800',
+      water: 'bg-blue-100 text-blue-800',
+      transport: 'bg-green-100 text-green-800',
+      food: 'bg-orange-100 text-orange-800'
+    };
+    return colors[category as keyof typeof colors] || colors.general;
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-green-50">
-        <Navbar />
-        <div className="pt-28 pb-16 text-center">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-            <p className="ml-4 text-lg">Loading community posts...</p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <Navbar />
-      <div className="pt-28 pb-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-center mb-12"
-          >
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
-              Community Stories
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Share your eco-friendly journey and inspire others in our community
-            </p>
-          </motion.div>
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            Eco Community
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Connect with fellow eco-warriors, share your journey, and get inspired by others making a difference.
+          </p>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">15K+</div>
+              <div className="text-sm text-gray-600">Members</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">500+</div>
+              <div className="text-sm text-gray-600">Daily Posts</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">50K+</div>
+              <div className="text-sm text-gray-600">Actions Shared</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">85+</div>
+              <div className="text-sm text-gray-600">Countries</div>
+            </div>
+          </div>
+        </motion.div>
 
-          {/* Share Your Story Form */}
-          {user ? (
-            <motion.div 
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-green-100 p-8 mb-12 hover:shadow-2xl transition-all duration-300"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <motion.div
-                  animate={{ rotate: [0, 10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Send className="w-6 h-6 text-green-600" />
-                </motion.div>
-                <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  Share Your Eco Story
-                </span>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Create Post */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-green-600" />
+                Share Your Eco Journey
               </h3>
-              <div className="space-y-6">
-                <motion.input 
-                  type="text"
-                  placeholder="Give your story a compelling title..."
-                  value={newStory.title}
-                  onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
-                  className="w-full p-4 border-2 border-green-200 rounded-xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 text-lg"
-                  whileFocus={{ scale: 1.02 }}
-                />
-                <motion.textarea
-                  placeholder="Share your journey, tips, or experiences with sustainable living..."
-                  value={newStory.content}
-                  onChange={(e) => setNewStory({ ...newStory, content: e.target.value })}
-                  className="w-full p-4 border-2 border-green-200 rounded-xl h-40 focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 resize-none text-lg"
-                  whileFocus={{ scale: 1.02 }}
-                />
-                <motion.input 
-                  type="url"
-                  placeholder="Add an image URL (optional)"
-                  value={newStory.image}
-                  onChange={(e) => setNewStory({ ...newStory, image: e.target.value })}
-                  className="w-full p-4 border-2 border-green-200 rounded-xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300"
-                  whileFocus={{ scale: 1.02 }}
-                />
-                <div className="flex items-center justify-between">
-                  <motion.button
-                    className="flex items-center gap-2 px-6 py-3 border-2 border-green-300 text-green-700 rounded-xl hover:bg-green-50 transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Image className="w-5 h-5" />
-                    Add Photo
-                  </motion.button>
-                  <motion.button 
-                    className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={handleSubmitStory}
-                    disabled={!newStory.title.trim() || !newStory.content.trim() || submitting}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {submitting ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                      />
-                    ) : (
-                      'Share Your Story ✨'
-                    )}
-                  </motion.button>
+              
+              {!user ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600 mb-4">Join our community to share your story!</p>
+                  <Button asChild>
+                    <Link to="/auth">Log In / Sign Up</Link>
+                  </Button>
                 </div>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              className="bg-white rounded-xl shadow-lg p-6 mb-12 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <h3 className="text-xl font-bold mb-4">Join Our Community</h3>
-              <p className="text-gray-600 mb-4">Log in to share your eco-friendly stories and connect with others</p>
-              <Button onClick={() => window.location.href = '/auth'}>
-                Sign In to Share
-              </Button>
-            </motion.div>
-          )}
+              ) : (
+                <div className="space-y-4">
+                  <Input
+                    placeholder="What's your post about?"
+                    value={newPostTitle}
+                    onChange={(e) => setNewPostTitle(e.target.value)}
+                    className="text-lg"
+                  />
+                  
+                  <Textarea
+                    placeholder="Share your eco tip, achievement, or question..."
+                    value={newPostContent}
+                    onChange={(e) => setNewPostContent(e.target.value)}
+                    rows={4}
+                  />
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <select
+                      value={newPostCategory}
+                      onChange={(e) => setNewPostCategory(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      {categories.map(category => (
+                        <option key={category.value} value={category.value}>
+                          {category.label}
+                        </option>
+                      ))}
+                    </select>
+                    
+                    <Button
+                      onClick={handleCreatePost}
+                      disabled={posting || !newPostTitle.trim() || !newPostContent.trim()}
+                      className="ml-auto"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      {posting ? 'Posting...' : 'Share Post'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </Card>
 
-          {/* Community Stories */}
-          <div className="space-y-8">
-            {stories.map((story, index) => (
-              <motion.div 
-                key={story.id} 
-                className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100 overflow-hidden hover:shadow-2xl transition-all duration-500 group"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.02, y: -5 }}
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                        <span className="text-green-600 font-bold">
-                          {getUserDisplayName(story).charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-semibold">{getUserDisplayName(story)}</p>
-                        <p className="text-xs text-gray-500">
-                          Posted {new Date(story.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
+            {/* Posts */}
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <Card key={i} className="p-6">
+                    <div className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                      <div className="h-20 bg-gray-200 rounded"></div>
                     </div>
-                    {user && story.user_id === user.id && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteStory(story.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
+                  </Card>
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
+              <Card className="p-8 text-center">
+                <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No posts yet</h3>
+                <p className="text-gray-600 mb-4">Be the first to share something with the community!</p>
+                {user && (
+                  <Button onClick={() => document.querySelector('textarea')?.focus()}>
+                    Create First Post
+                  </Button>
+                )}
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {posts.map((post, index) => {
+                  const CategoryIcon = getCategoryIcon(post.category);
                   
-                  <h3 className="text-xl font-bold mb-3">{story.title}</h3>
-                  <p className="text-gray-600 mb-4">{story.content}</p>
-                  
-                  {story.image_url && (
-                    <div className="mb-4 rounded-lg overflow-hidden">
-                      <img 
-                        src={story.image_url} 
-                        alt={story.title} 
-                        className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <button 
-                        className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors"
-                        onClick={() => handleLike(story.id)}
-                      >
-                        <Heart className="w-5 h-5" />
-                        <span>{story.likes_count}</span>
-                      </button>
-                      <button className="flex items-center gap-1 text-gray-500 hover:text-green-600 transition-colors">
-                        <MessageCircle className="w-5 h-5" />
-                        <span>Comment</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                  return (
+                    <motion.div
+                      key={post.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="p-6 hover:shadow-lg transition-shadow">
+                        <div className="flex items-start gap-4">
+                          <div className="h-10 w-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                            {post.profiles?.full_name?.charAt(0) || 'U'}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold">
+                                {post.profiles?.full_name || 'Anonymous User'}
+                              </h4>
+                              <span className={`px-2 py-1 rounded-full text-xs ${getCategoryColor(post.category)}`}>
+                                <CategoryIcon className="h-3 w-3 inline mr-1" />
+                                {categories.find(cat => cat.value === post.category)?.label || post.category}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {formatDate(post.created_at)}
+                              </span>
+                            </div>
+                            
+                            <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
+                            <p className="text-gray-700 mb-4">{post.content}</p>
+                            
+                            <div className="flex items-center gap-4">
+                              <button className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors">
+                                <Heart className="h-4 w-4" />
+                                <span className="text-sm">{post.likes_count}</span>
+                              </button>
+                              <button className="flex items-center gap-1 text-gray-500 hover:text-blue-500 transition-colors">
+                                <MessageCircle className="h-4 w-4" />
+                                <span className="text-sm">{post.comments_count}</span>
+                              </button>
+                              <button className="flex items-center gap-1 text-gray-500 hover:text-green-500 transition-colors">
+                                <Share2 className="h-4 w-4" />
+                                <span className="text-sm">Share</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {stories.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">No community posts yet. Be the first to share your story!</p>
-              {!user && (
-                <Button onClick={() => window.location.href = '/auth'}>
-                  Sign In to Share
-                </Button>
-              )}
-            </div>
-          )}
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Categories */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-4">Categories</h3>
+              <div className="space-y-2">
+                {categories.map(category => {
+                  const Icon = category.icon;
+                  return (
+                    <button
+                      key={category.value}
+                      className="w-full text-left p-3 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <Icon className="h-4 w-4 text-green-600" />
+                      <span>{category.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
 
-          {/* Community Stats */}
-          <motion.div 
-            className="mt-16 bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-8 text-white text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <h3 className="text-2xl font-bold mb-6">Community Impact</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div>
-                <p className="text-3xl font-bold mb-2">{stories.length}</p>
-                <p className="text-green-100">Stories Shared</p>
+            {/* Community Guidelines */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-4">Community Guidelines</h3>
+              <div className="space-y-3 text-sm text-gray-600">
+                <p>• Be respectful and supportive</p>
+                <p>• Share genuine eco experiences</p>
+                <p>• Keep posts relevant to sustainability</p>
+                <p>• No spam or promotional content</p>
+                <p>• Help others in their eco journey</p>
               </div>
-              <div>
-                <p className="text-3xl font-bold mb-2">{stories.reduce((sum, story) => sum + story.likes_count, 0)}</p>
-                <p className="text-green-100">Total Likes</p>
+            </Card>
+
+            {/* Featured Members */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-4">Top Contributors</h3>
+              <div className="space-y-3">
+                {[
+                  { name: 'Sarah K.', posts: 24, avatar: 'https://randomuser.me/api/portraits/women/45.jpg' },
+                  { name: 'Mike R.', posts: 18, avatar: 'https://randomuser.me/api/portraits/men/42.jpg' },
+                  { name: 'Elena V.', posts: 15, avatar: 'https://randomuser.me/api/portraits/women/33.jpg' }
+                ].map((member, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <img 
+                      src={member.avatar} 
+                      alt={member.name}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm">{member.name}</div>
+                      <div className="text-xs text-gray-500">{member.posts} posts</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div>
-                <p className="text-3xl font-bold mb-2">
-                  {new Set(stories.map(story => story.user_id)).size}
-                </p>
-                <p className="text-green-100">Active Members</p>
-              </div>
-            </div>
-          </motion.div>
+            </Card>
+          </div>
         </div>
       </div>
+      
       <Footer />
     </div>
   );
