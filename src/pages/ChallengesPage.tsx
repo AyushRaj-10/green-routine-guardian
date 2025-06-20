@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,172 +7,204 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { 
-  Calendar, 
+  Leaf, 
+  Droplets, 
+  Zap, 
+  Car, 
+  Recycle, 
   Users, 
-  Trophy, 
-  Target, 
-  Clock, 
-  Star,
+  Calendar,
+  Trophy,
+  Target,
   CheckCircle,
-  Play,
-  Award
+  Clock
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  duration: string;
+  points: number;
+  participants: number;
+  image: string;
+  objectives: string[];
+}
+
+interface UserChallenge {
+  id: string;
+  challenge_id: string;
+  is_completed: boolean;
+  joined_at: string;
+}
+
 const ChallengesPage = () => {
   const { user } = useAuth();
-  const [joinedChallenges, setJoinedChallenges] = useState<Set<number>>(new Set());
-
-  const challenges = [
+  const [challenges] = useState<Challenge[]>([
     {
-      id: 1,
-      title: 'Plastic-Free Week',
-      description: 'Avoid using single-use plastics for an entire week and document your journey.',
-      longDescription: 'This challenge encourages participants to eliminate single-use plastics from their daily routine. Track your plastic consumption, find alternatives, and share your experience with the community.',
-      difficulty: 'Medium',
-      points: 250,
-      participants: 1240,
-      duration: '7 days',
-      image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800&q=80',
-      category: 'waste',
-      status: 'active',
-      progress: 65,
-      startDate: '2025-06-15',
-      endDate: '2025-06-22',
-      requirements: ['Track daily plastic usage', 'Find 3 plastic alternatives', 'Share progress photos'],
-      rewards: ['250 points', 'Plastic-free badge', 'Eco-friendly product discount']
-    },
-    {
-      id: 2,
-      title: '30-Day Water Conservation',
-      description: 'Reduce your water consumption through simple daily actions and tracking.',
-      longDescription: 'Learn and implement water-saving techniques in your daily routine. Monitor your water usage and discover how small changes can make a big impact.',
-      difficulty: 'Easy',
-      points: 150,
-      participants: 2187,
-      duration: '30 days',
-      image: 'https://images.unsplash.com/photo-1487252665478-49b61b47f302?auto=format&fit=crop&w=800&q=80',
-      category: 'water',
-      status: 'upcoming',
-      progress: 0,
-      startDate: '2025-07-01',
-      endDate: '2025-07-31',
-      requirements: ['Install water-saving devices', 'Track daily usage', 'Complete weekly check-ins'],
-      rewards: ['150 points', 'Water guardian badge', 'Water conservation guide']
-    },
-    {
-      id: 3,
-      title: 'Zero Waste Month',
-      description: 'Minimize your household waste and aim for zero landfill contribution.',
-      longDescription: 'The ultimate sustainability challenge! Reduce, reuse, and recycle to achieve minimal waste output. Perfect for advanced eco-warriors.',
-      difficulty: 'Hard',
-      points: 500,
-      participants: 943,
-      duration: '30 days',
-      image: 'https://images.unsplash.com/photo-1466721591366-2d5fba72006d?auto=format&fit=crop&w=800&q=80',
-      category: 'waste',
-      status: 'completed',
-      progress: 100,
-      startDate: '2025-05-01',
-      endDate: '2025-05-31',
-      requirements: ['Achieve <1kg waste per week', 'Document all waste', 'Share tips with community'],
-      rewards: ['500 points', 'Zero waste champion badge', 'Sustainability consultation']
-    },
-    {
-      id: 4,
-      title: 'Plant-Based Diet Challenge',
-      description: 'Adopt a plant-based diet for two weeks to reduce your carbon footprint.',
-      longDescription: 'Explore the environmental benefits of plant-based eating. Discover new recipes, track your carbon savings, and feel great!',
-      difficulty: 'Medium',
-      points: 200,
-      participants: 2120,
-      duration: '14 days',
-      image: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80',
-      category: 'food',
-      status: 'active',
-      progress: 42,
-      startDate: '2025-06-10',
-      endDate: '2025-06-24',
-      requirements: ['Plan plant-based meals', 'Try 5 new recipes', 'Calculate carbon savings'],
-      rewards: ['200 points', 'Plant-based pioneer badge', 'Recipe book']
-    },
-    {
-      id: 5,
-      title: 'Bike to Work Challenge',
-      description: 'Use your bicycle for commuting and reduce transportation emissions.',
-      longDescription: 'Ditch the car and embrace cycling! Track your rides, calculate emission savings, and join a growing community of eco-commuters.',
-      difficulty: 'Medium',
-      points: 300,
-      participants: 856,
-      duration: '21 days',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
-      category: 'transport',
-      status: 'active',
-      progress: 78,
-      startDate: '2025-06-01',
-      endDate: '2025-06-21',
-      requirements: ['Bike to work 15+ days', 'Track distance and emissions', 'Share cycling tips'],
-      rewards: ['300 points', 'Eco-cyclist badge', 'Bike maintenance kit']
-    },
-    {
-      id: 6,
+      id: 'energy-saver',
       title: 'Energy Saver Challenge',
-      description: 'Reduce your home energy consumption by 20% through smart habits.',
-      longDescription: 'Learn energy-efficient practices and implement them at home. Monitor your usage and see the impact on both the environment and your bills.',
-      difficulty: 'Easy',
-      points: 180,
-      participants: 1567,
-      duration: '28 days',
-      image: 'https://images.unsplash.com/photo-1497436072909-f5e4be912640?auto=format&fit=crop&w=800&q=80',
+      description: 'Reduce your energy consumption by 25% this month through simple daily actions.',
       category: 'energy',
-      status: 'upcoming',
-      progress: 0,
-      startDate: '2025-07-15',
-      endDate: '2025-08-11',
-      requirements: ['Install energy monitoring', 'Achieve 20% reduction', 'Share energy tips'],
-      rewards: ['180 points', 'Energy master badge', 'Smart home guide']
+      difficulty: 'medium',
+      duration: '30 days',
+      points: 500,
+      participants: 1234,
+      image: '/lovable-uploads/672b81a3-7d90-4054-99bb-fe22a1de44ac.png',
+      objectives: [
+        'Turn off lights when leaving rooms',
+        'Unplug electronics when not in use',
+        'Use natural light during the day',
+        'Set thermostat 2 degrees lower'
+      ]
+    },
+    {
+      id: 'zero-waste-week',
+      title: 'Zero Waste Week',
+      description: 'Challenge yourself to produce zero waste for an entire week.',
+      category: 'waste',
+      difficulty: 'hard',
+      duration: '7 days',
+      points: 750,
+      participants: 892,
+      image: '/lovable-uploads/678e34c1-ffbe-4a14-ac03-e3aa8bcc0855.png',
+      objectives: [
+        'Use reusable bags and containers',
+        'Compost organic waste',
+        'Avoid single-use plastics',
+        'Repair instead of replacing items'
+      ]
+    },
+    {
+      id: 'water-conservation',
+      title: 'Water Conservation Master',
+      description: 'Save water with smart habits and reduce your usage by 20%.',
+      category: 'water',
+      difficulty: 'easy',
+      duration: '21 days',
+      points: 350,
+      participants: 2156,
+      image: '/lovable-uploads/f6e9071b-c862-4ead-8885-26a7d61cf7ac.png',
+      objectives: [
+        'Take shorter showers',
+        'Fix any leaky faucets',
+        'Use water-efficient appliances',
+        'Collect rainwater for plants'
+      ]
+    },
+    {
+      id: 'green-transport',
+      title: 'Green Transport Challenge',
+      description: 'Use eco-friendly transportation for all your trips this month.',
+      category: 'transport',
+      difficulty: 'medium',
+      duration: '30 days',
+      points: 600,
+      participants: 756,
+      image: '/lovable-uploads/8f11867a-66d1-4789-a318-e582a52aaa8a.png',
+      objectives: [
+        'Walk or bike for short trips',
+        'Use public transportation',
+        'Carpool when possible',
+        'Work from home when feasible'
+      ]
+    },
+    {
+      id: 'plant-based-meals',
+      title: 'Plant-Based Meals',
+      description: 'Eat plant-based meals for 15 days and discover delicious recipes.',
+      category: 'food',
+      difficulty: 'easy',
+      duration: '15 days',
+      points: 400,
+      participants: 1876,
+      image: '/lovable-uploads/c7876a29-2cdb-4302-8a0a-34ba7a6edd6e.png',
+      objectives: [
+        'Try 3 new plant-based recipes',
+        'Replace meat with legumes',
+        'Explore local farmers markets',
+        'Share recipes with friends'
+      ]
+    },
+    {
+      id: 'plastic-free-july',
+      title: 'Plastic-Free July',
+      description: 'Go plastic-free for the entire month and inspire others to do the same.',
+      category: 'waste',
+      difficulty: 'hard',
+      duration: '31 days',
+      points: 800,
+      participants: 543,
+      image: '/lovable-uploads/3e706835-5bd9-494e-9b1b-92bd01778ca1.png',
+      objectives: [
+        'Use glass and metal containers',
+        'Shop with reusable bags',
+        'Choose plastic-free alternatives',
+        'Document your journey'
+      ]
     }
-  ];
+  ]);
 
-  const topParticipants = [
-    { id: 1, name: 'Jennifer L.', points: 3450, avatar: 'https://randomuser.me/api/portraits/women/44.jpg', level: 'Gold', challenges: 12 },
-    { id: 2, name: 'Robert W.', points: 3280, avatar: 'https://randomuser.me/api/portraits/men/32.jpg', level: 'Gold', challenges: 10 },
-    { id: 3, name: 'Ashley T.', points: 3105, avatar: 'https://randomuser.me/api/portraits/women/67.jpg', level: 'Silver', challenges: 9 },
-    { id: 4, name: 'Mark D.', points: 2890, avatar: 'https://randomuser.me/api/portraits/men/81.jpg', level: 'Silver', challenges: 8 },
-    { id: 5, name: 'Sophia L.', points: 2745, avatar: 'https://randomuser.me/api/portraits/women/38.jpg', level: 'Silver', challenges: 7 }
-  ];
+  const [userChallenges, setUserChallenges] = useState<UserChallenge[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const difficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Hard': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  const categoryIcons = {
+    energy: Zap,
+    water: Droplets,
+    waste: Recycle,
+    transport: Car,
+    food: Leaf
+  };
+
+  const categoryColors = {
+    energy: 'bg-yellow-100 text-yellow-800',
+    water: 'bg-blue-100 text-blue-800',
+    waste: 'bg-green-100 text-green-800',
+    transport: 'bg-purple-100 text-purple-800',
+    food: 'bg-orange-100 text-orange-800'
+  };
+
+  const difficultyColors = {
+    easy: 'bg-green-100 text-green-800',
+    medium: 'bg-yellow-100 text-yellow-800',
+    hard: 'bg-red-100 text-red-800'
+  };
+
+  const fetchUserChallenges = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_challenges')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error fetching user challenges:', error);
+        return;
+      }
+
+      setUserChallenges(data || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const statusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800 border-green-200';
-      case 'upcoming': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'completed': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+  useEffect(() => {
+    fetchUserChallenges();
+  }, [user]);
 
-  const levelColor = (level: string) => {
-    switch (level) {
-      case 'Gold': return 'bg-yellow-100 text-yellow-800';
-      case 'Silver': return 'bg-gray-100 text-gray-800';
-      case 'Bronze': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const handleJoinChallenge = (challengeId: number, challengeTitle: string) => {
+  const handleJoinChallenge = async (challengeId: string) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -182,42 +214,68 @@ const ChallengesPage = () => {
       return;
     }
 
-    if (joinedChallenges.has(challengeId)) {
+    try {
+      // Check if user already joined this challenge
+      const existingChallenge = userChallenges.find(uc => uc.challenge_id === challengeId);
+      if (existingChallenge) {
+        toast({
+          title: "Already Joined",
+          description: "You're already participating in this challenge!",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('user_challenges')
+        .insert({
+          user_id: user.id,
+          challenge_id: challengeId
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error joining challenge:', error);
+        toast({
+          title: "Error",
+          description: "Failed to join challenge. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setUserChallenges(prev => [...prev, data]);
+      
+      const challenge = challenges.find(c => c.id === challengeId);
       toast({
-        title: "Already Joined!",
-        description: `You're already participating in "${challengeTitle}". Keep up the great work!`,
+        title: "Challenge Joined! 🎉",
+        description: `You've successfully joined "${challenge?.title}". Good luck on your eco journey!`,
       });
-      return;
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
     }
-
-    // Simulate joining the challenge
-    setJoinedChallenges(prev => new Set([...prev, challengeId]));
-    
-    toast({
-      title: "Challenge Joined! 🎉",
-      description: `Welcome to "${challengeTitle}"! Check your dashboard for progress tracking.`,
-    });
   };
 
-  const getButtonText = (challenge: any) => {
-    if (joinedChallenges.has(challenge.id)) return 'Joined';
-    if (challenge.status === 'completed') return 'View Results';
-    if (challenge.status === 'upcoming') return 'Get Notified';
-    return 'Join Challenge';
+  const isJoined = (challengeId: string) => {
+    return userChallenges.some(uc => uc.challenge_id === challengeId);
   };
 
-  const getButtonIcon = (challenge: any) => {
-    if (joinedChallenges.has(challenge.id)) return CheckCircle;
-    if (challenge.status === 'completed') return Trophy;
-    if (challenge.status === 'upcoming') return Clock;
-    return Play;
+  const isCompleted = (challengeId: string) => {
+    const userChallenge = userChallenges.find(uc => uc.challenge_id === challengeId);
+    return userChallenge?.is_completed || false;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-24 pb-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -228,182 +286,177 @@ const ChallengesPage = () => {
             Eco Challenges
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Join thousands of eco-warriors in making a real difference. Complete challenges, earn points, and help create a sustainable future.
+            Take on sustainable challenges, earn points, and make a real difference for our planet. 
+            Join thousands of eco-warriors in creating positive change!
           </p>
           
-          {!user && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto mb-8">
-              <p className="text-blue-800">
-                <strong>Want to join challenges?</strong> Please{' '}
-                <Link to="/auth" className="text-blue-600 hover:underline font-semibold">
-                  log in or create an account
-                </Link>{' '}
-                to start your eco journey!
-              </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">12K+</div>
+              <div className="text-sm text-gray-600">Active Participants</div>
             </div>
-          )}
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">50+</div>
+              <div className="text-sm text-gray-600">Challenges</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">2.5M</div>
+              <div className="text-sm text-gray-600">Points Earned</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">85%</div>
+              <div className="text-sm text-gray-600">Success Rate</div>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Main Challenges */}
-          <div className="lg:col-span-3">
-            <div className="grid gap-6">
-              {challenges.map((challenge, index) => {
-                const ButtonIcon = getButtonIcon(challenge);
-                const isJoined = joinedChallenges.has(challenge.id);
-                
-                return (
-                  <motion.div
-                    key={challenge.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300">
-                      <div className="md:flex">
-                        <div className="md:w-1/3">
-                          <img 
-                            src={challenge.image} 
-                            alt={challenge.title}
-                            className="w-full h-48 md:h-full object-cover"
-                          />
-                        </div>
-                        <div className="md:w-2/3 p-6">
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            <Badge className={difficultyColor(challenge.difficulty)}>
-                              {challenge.difficulty}
-                            </Badge>
-                            <Badge className={statusColor(challenge.status)}>
-                              {challenge.status.charAt(0).toUpperCase() + challenge.status.slice(1)}
-                            </Badge>
-                            <Badge variant="outline" className="border-gray-300">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {challenge.duration}
-                            </Badge>
-                          </div>
-                          
-                          <h3 className="text-2xl font-bold mb-3">{challenge.title}</h3>
-                          <p className="text-gray-600 mb-4">{challenge.longDescription}</p>
-                          
-                          {challenge.status === 'active' && (
-                            <div className="mb-4">
-                              <div className="flex justify-between text-sm mb-2">
-                                <span>Progress</span>
-                                <span>{challenge.progress}%</span>
-                              </div>
-                              <Progress value={challenge.progress} className="h-2" />
-                            </div>
-                          )}
-                          
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                            <div className="text-center p-3 bg-gray-50 rounded-lg">
-                              <Users className="h-5 w-5 mx-auto mb-1 text-blue-600" />
-                              <div className="text-sm font-semibold">{challenge.participants}</div>
-                              <div className="text-xs text-gray-500">Participants</div>
-                            </div>
-                            <div className="text-center p-3 bg-gray-50 rounded-lg">
-                              <Star className="h-5 w-5 mx-auto mb-1 text-yellow-600" />
-                              <div className="text-sm font-semibold">{challenge.points}</div>
-                              <div className="text-xs text-gray-500">Points</div>
-                            </div>
-                            <div className="text-center p-3 bg-gray-50 rounded-lg col-span-2 md:col-span-1">
-                              <Target className="h-5 w-5 mx-auto mb-1 text-green-600" />
-                              <div className="text-sm font-semibold">{challenge.category}</div>
-                              <div className="text-xs text-gray-500">Category</div>
-                            </div>
-                          </div>
-                          
-                          <Button 
-                            onClick={() => handleJoinChallenge(challenge.id, challenge.title)}
-                            className={`w-full ${isJoined ? 'bg-green-600 hover:bg-green-700' : ''}`}
-                            disabled={isJoined}
-                          >
-                            <ButtonIcon className="h-4 w-4 mr-2" />
-                            {getButtonText(challenge)}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Leaderboard */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy className="h-5 w-5 text-yellow-600" />
-                <h3 className="text-xl font-bold">Top Challengers</h3>
-              </div>
-              
-              <div className="space-y-4">
-                {topParticipants.map((participant, index) => (
-                  <div key={participant.id} className="flex items-center gap-3">
-                    <div className="text-lg font-bold text-gray-400 w-6">
-                      {index + 1}
-                    </div>
+        {/* Challenges Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {challenges.map((challenge, index) => {
+            const CategoryIcon = categoryIcons[challenge.category as keyof typeof categoryIcons];
+            const joined = isJoined(challenge.id);
+            const completed = isCompleted(challenge.id);
+            
+            return (
+              <motion.div
+                key={challenge.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 shadow-lg border-0 bg-white/80 backdrop-blur">
+                  <div className="relative">
                     <img 
-                      src={participant.avatar} 
-                      alt={participant.name}
-                      className="h-10 w-10 rounded-full object-cover"
+                      src={challenge.image} 
+                      alt={challenge.title}
+                      className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        // Fallback to a solid color background if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.parentElement!.style.background = 'linear-gradient(135deg, #10b981, #3b82f6)';
+                        target.parentElement!.style.display = 'flex';
+                        target.parentElement!.style.alignItems = 'center';
+                        target.parentElement!.style.justifyContent = 'center';
+                        target.parentElement!.innerHTML = `<div class="text-white text-4xl"><${CategoryIcon.name.toLowerCase()} /></div>`;
+                      }}
                     />
-                    <div className="flex-1">
-                      <div className="font-semibold">{participant.name}</div>
-                      <div className="text-sm text-gray-500">{participant.challenges} challenges</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-bold text-green-600">{participant.points}</div>
-                      <Badge className={`text-xs ${levelColor(participant.level)}`}>
-                        {participant.level}
+                    <div className="absolute top-4 left-4 flex gap-2">
+                      <Badge className={categoryColors[challenge.category as keyof typeof categoryColors]}>
+                        <CategoryIcon className="h-3 w-3 mr-1" />
+                        {challenge.category}
+                      </Badge>
+                      <Badge className={difficultyColors[challenge.difficulty]}>
+                        {challenge.difficulty}
                       </Badge>
                     </div>
+                    {completed && (
+                      <div className="absolute top-4 right-4">
+                        <CheckCircle className="h-8 w-8 text-green-500 bg-white rounded-full" />
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-              
-              {user && (
-                <div className="mt-6 pt-4 border-t">
-                  <div className="text-center">
-                    <div className="text-sm text-gray-500">Your Rank</div>
-                    <div className="font-bold text-lg">12th</div>
-                    <div className="text-sm text-gray-500 mt-2">Your Points</div>
-                    <div className="font-bold text-green-600">1,850</div>
-                  </div>
-                </div>
-              )}
-            </Card>
+                  
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-2">{challenge.title}</h3>
+                    <p className="text-gray-600 mb-4 text-sm">{challenge.description}</p>
+                    
+                    <div className="space-y-3 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Clock className="h-4 w-4" />
+                        <span>{challenge.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Trophy className="h-4 w-4" />
+                        <span>{challenge.points} points</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Users className="h-4 w-4" />
+                        <span>{challenge.participants.toLocaleString()} participants</span>
+                      </div>
+                    </div>
 
-            {/* Rewards Info */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Award className="h-5 w-5 text-purple-600" />
-                <h3 className="text-xl font-bold">Rewards</h3>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Eco Badge</span>
-                  <Badge variant="outline">100 pts</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Gift Card</span>
-                  <Badge variant="outline">500 pts</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Plant a Tree</span>
-                  <Badge variant="outline">1000 pts</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Consultation</span>
-                  <Badge variant="outline">2500 pts</Badge>
-                </div>
-              </div>
-            </Card>
-          </div>
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2 text-sm">Objectives:</h4>
+                      <ul className="text-xs text-gray-600 space-y-1">
+                        {challenge.objectives.slice(0, 3).map((objective, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <Target className="h-3 w-3 mt-0.5 text-green-500 flex-shrink-0" />
+                            <span>{objective}</span>
+                          </li>
+                        ))}
+                        {challenge.objectives.length > 3 && (
+                          <li className="text-gray-400">+{challenge.objectives.length - 3} more...</li>
+                        )}
+                      </ul>
+                    </div>
+
+                    {joined ? (
+                      <div className="space-y-3">
+                        {completed ? (
+                          <Button disabled className="w-full bg-green-500">
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Completed
+                          </Button>
+                        ) : (
+                          <>
+                            <Progress value={Math.random() * 60 + 20} className="h-2" />
+                            <Button disabled className="w-full">
+                              <Clock className="h-4 w-4 mr-2" />
+                              In Progress
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <Button 
+                        onClick={() => handleJoinChallenge(challenge.id)}
+                        disabled={loading}
+                        className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                      >
+                        {loading ? 'Joining...' : 'Join Challenge'}
+                      </Button>
+                    )}
+
+                    {!user && (
+                      <p className="text-xs text-center text-gray-500 mt-2">
+                        <Link to="/auth" className="text-green-600 hover:underline">
+                          Log in
+                        </Link>
+                        {' '}to track your progress
+                      </p>
+                    )}
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
+
+        {/* Call to Action */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="text-center mt-16"
+        >
+          <Card className="p-8 shadow-lg border-0 bg-gradient-to-r from-green-600 to-blue-600">
+            <h2 className="text-3xl font-bold text-white mb-4">Ready to Make a Difference?</h2>
+            <p className="text-green-100 mb-6 max-w-2xl mx-auto">
+              Join our community of eco-warriors and start your sustainable journey today. 
+              Every small action counts towards a bigger impact!
+            </p>
+            {!user ? (
+              <Button asChild size="lg" className="bg-white text-green-600 hover:bg-green-50">
+                <Link to="/auth">Get Started</Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" className="bg-white text-green-600 hover:bg-green-50">
+                <Link to="/community">Join Community</Link>
+              </Button>
+            )}
+          </Card>
+        </motion.div>
       </div>
       
       <Footer />
