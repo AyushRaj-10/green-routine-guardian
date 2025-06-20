@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -57,7 +56,7 @@ const ChallengesPage = () => {
       duration: '30 days',
       points: 500,
       participants: 1234,
-      image: '/lovable-uploads/672b81a3-7d90-4054-99bb-fe22a1de44ac.png',
+      image: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=800&q=80',
       objectives: [
         'Turn off lights when leaving rooms',
         'Unplug electronics when not in use',
@@ -74,7 +73,7 @@ const ChallengesPage = () => {
       duration: '7 days',
       points: 750,
       participants: 892,
-      image: '/lovable-uploads/678e34c1-ffbe-4a14-ac03-e3aa8bcc0855.png',
+      image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80',
       objectives: [
         'Use reusable bags and containers',
         'Compost organic waste',
@@ -91,7 +90,7 @@ const ChallengesPage = () => {
       duration: '21 days',
       points: 350,
       participants: 2156,
-      image: '/lovable-uploads/f6e9071b-c862-4ead-8885-26a7d61cf7ac.png',
+      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
       objectives: [
         'Take shorter showers',
         'Fix any leaky faucets',
@@ -108,7 +107,7 @@ const ChallengesPage = () => {
       duration: '30 days',
       points: 600,
       participants: 756,
-      image: '/lovable-uploads/8f11867a-66d1-4789-a318-e582a52aaa8a.png',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80',
       objectives: [
         'Walk or bike for short trips',
         'Use public transportation',
@@ -125,7 +124,7 @@ const ChallengesPage = () => {
       duration: '15 days',
       points: 400,
       participants: 1876,
-      image: '/lovable-uploads/c7876a29-2cdb-4302-8a0a-34ba7a6edd6e.png',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
       objectives: [
         'Try 3 new plant-based recipes',
         'Replace meat with legumes',
@@ -142,7 +141,7 @@ const ChallengesPage = () => {
       duration: '31 days',
       points: 800,
       participants: 543,
-      image: '/lovable-uploads/3e706835-5bd9-494e-9b1b-92bd01778ca1.png',
+      image: 'https://images.unsplash.com/photo-1609167830220-7164aa360951?auto=format&fit=crop&w=800&q=80',
       objectives: [
         'Use glass and metal containers',
         'Shop with reusable bags',
@@ -334,11 +333,10 @@ const ChallengesPage = () => {
                         // Fallback to a solid color background if image fails to load
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
-                        target.parentElement!.style.background = 'linear-gradient(135deg, #10b981, #3b82f6)';
-                        target.parentElement!.style.display = 'flex';
-                        target.parentElement!.style.alignItems = 'center';
-                        target.parentElement!.style.justifyContent = 'center';
-                        target.parentElement!.innerHTML = `<div class="text-white text-4xl"><${CategoryIcon.name.toLowerCase()} /></div>`;
+                        const fallbackDiv = document.createElement('div');
+                        fallbackDiv.className = 'w-full h-48 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center';
+                        fallbackDiv.innerHTML = `<div class="text-white"><svg class="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>`;
+                        target.parentElement!.appendChild(fallbackDiv);
                       }}
                     />
                     <div className="absolute top-4 left-4 flex gap-2">
